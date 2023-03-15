@@ -15,6 +15,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class TbUser {
+    @TableId(value = "userId")
     private String userId;         // 自增ID
     // 用户名
     private String userName;

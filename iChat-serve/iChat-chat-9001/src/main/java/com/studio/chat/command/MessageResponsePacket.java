@@ -1,20 +1,21 @@
 package com.studio.chat.command;
 
-import com.holiday.matcloud.dto.User;
+
+import com.studio.common.model.pojo.TbUser;
 
 public class MessageResponsePacket extends Packet{
     /**
      * 这条消息是谁发的
      */
-    private User fromUser;
+    private TbUser fromUser;
 	
 	private String message;
 		
-	public User getFromUser() {
+	public TbUser getFromUser() {
 		return fromUser;
 	}
 
-	public void setFromUser(User fromUser) {
+	public void setFromUser(TbUser fromUser) {
 		this.fromUser = fromUser;
 	}
 
