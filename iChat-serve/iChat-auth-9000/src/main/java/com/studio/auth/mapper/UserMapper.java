@@ -18,8 +18,8 @@ import java.util.List;
 public interface UserMapper {
     @Select("select * from tb_user where username=#{username}")
     @Results({
-            @Result(id = true, property = "id", column = "id"),
-            @Result(property = "roles", column = "id", javaType = List.class,
+            @Result(id = true, property = "userId", column = "userId"),
+            @Result(property = "roles", column = "userId", javaType = List.class,
                     many = @Many(select = "com.studio.auth.mapper.RoleMapper.findByUid"))
     })
     public User findByUsername(String username);

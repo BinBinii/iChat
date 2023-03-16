@@ -28,14 +28,14 @@ import java.util.List;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class User implements UserDetails {
-    @TableId(value = "userId")
-    private String userId;         // 自增ID
+
+    private Integer userId;         // 自增ID
     // 用户名
     private String username;
     // 密码
     private String password;
     // 性别
-    private String sex;
+    private Integer sex;
     // 头像路径
     private String image;
 
@@ -43,7 +43,7 @@ public class User implements UserDetails {
 
     private Integer status;
 
-    private List<TbRole> roles = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
 
     @JsonIgnore
     @Override

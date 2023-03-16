@@ -4,6 +4,7 @@ import com.studio.chat.service.UserService;
 import com.studio.common.model.pojo.TbUser;
 import com.studio.common.model.vo.Render;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Secured("ROLE_USER")
     @GetMapping("friend/list")
     public Object getFriendListData(@RequestParam("userId") String userId) {
         List<TbUser> result = userService.getFriendListData(userId);

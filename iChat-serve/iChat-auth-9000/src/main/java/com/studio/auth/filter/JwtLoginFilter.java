@@ -3,9 +3,9 @@ package com.studio.auth.filter;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studio.auth.config.RsaKeyProperties;
+import com.studio.auth.entity.Role;
 import com.studio.auth.entity.User;
 import com.studio.auth.utils.JwtUtils;
-import com.studio.common.model.pojo.TbRole;
 import com.studio.common.model.pojo.TbUser;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -71,7 +71,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     public void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         User sysUser = new User();
         sysUser.setUsername(authResult.getName());
-        sysUser.setRoles((List<TbRole>) authResult.getAuthorities());
+        sysUser.setRoles((List<Role>) authResult.getAuthorities());
         String token = JwtUtils.generateTokenExpireInMinutes(sysUser,rsaKeyProperties.getPrivateKey(),24*60);
         response.addHeader("Authorization", "iChatToken " + token);	//将Token信息返回给用户
         try {

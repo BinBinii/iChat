@@ -1,11 +1,10 @@
 package com.studio.chat.config;
 
-import com.studio.auth.utils.RsaUtils;
+import com.studio.chat.utils.RsaUtils;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 
 /**
@@ -19,15 +18,10 @@ public class RsaKeyProperties {
 
     private String pubKeyPath;
 
-    private String priKeyPath;
-
     private PublicKey publicKey;
-
-    private PrivateKey privateKey;
 
     @PostConstruct
     public void createKey() throws Exception {
         this.publicKey = RsaUtils.getPublicKey(pubKeyPath);
-        this.privateKey = RsaUtils.getPrivateKey(priKeyPath);
     }
 }

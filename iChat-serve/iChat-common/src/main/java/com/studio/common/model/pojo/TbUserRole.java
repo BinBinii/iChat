@@ -15,9 +15,6 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class TbUserRole {
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;         // 自增ID
-
     private Integer user_id;
 
     private Integer role_id;

@@ -1,8 +1,10 @@
 package com.studio.chat;
 
+import com.studio.chat.config.RsaKeyProperties;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -15,6 +17,7 @@ import org.springframework.web.filter.CorsFilter;
  */
 @SpringBootApplication
 @MapperScan("com.studio.chat.mapper")
+@EnableConfigurationProperties(RsaKeyProperties.class)
 public class ChatApplication_9001 {
     public static void main(String[] args) {
         SpringApplication.run(ChatApplication_9001.class, args);

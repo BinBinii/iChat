@@ -4,8 +4,8 @@ netty:
   port: 9999
 mybatis-plus:
   type-aliases-package: com.studio.common.model.pojo
-#  configuration:
-#    map-underscore-to-camel-case: true
+  configuration:
+    map-underscore-to-camel-case: false
 #  mapper-locations: classpath:mapper/*.xml
 spring:
   application:
@@ -70,3 +70,6 @@ login:
   expire: 1800
 pic:
   dir: /root/data/images/
+rsa:
+  key:
+    pubKeyPath: /Users/binbini/Documents/workspace/iChat/iChat-serve/auth_key/id_key_rsa.pub

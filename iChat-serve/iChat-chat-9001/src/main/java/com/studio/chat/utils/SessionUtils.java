@@ -19,7 +19,7 @@ public class SessionUtils {
 	private static Map<String, ChannelGroup> groupIdChannelGroupMap = new ConcurrentHashMap<>();
 	
 	public static void bindChannel(TbUser user, Channel channel) {
-		userIdChannelMap.put(user.getUserId(), channel);
+		userIdChannelMap.put(user.getUserId().toString(), channel);
 		channel.attr(Attributes.SESSION).set(user);
 	}
 	
