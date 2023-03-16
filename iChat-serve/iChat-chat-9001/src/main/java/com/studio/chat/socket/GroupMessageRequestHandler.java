@@ -39,7 +39,7 @@ public class GroupMessageRequestHandler extends SimpleChannelInboundHandler<Grou
 		List<String> nameList = new ArrayList<>();
 		for (Channel channel : channelGroup) {
 			TbUser user = SessionUtils.getUser(channel);
-			nameList.add(user.getNickName());
+			nameList.add(user.getNickname());
 		}
 		if (channelGroup != null) {
 			TbUser user = SessionUtils.getUser(ctx.channel());

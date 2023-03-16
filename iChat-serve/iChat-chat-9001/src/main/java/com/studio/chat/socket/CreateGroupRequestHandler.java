@@ -37,13 +37,13 @@ public class CreateGroupRequestHandler extends SimpleChannelInboundHandler<Creat
 		List<String> nameList = new ArrayList<>();
 		ChannelGroup channelGroup = new DefaultChannelGroup(ctx.executor());
 		channelGroup.add(ctx.channel());
-		nameList.add(SessionUtils.getUser(ctx.channel()).getNickName());
+		nameList.add(SessionUtils.getUser(ctx.channel()).getNickname());
 		for (String userId : userIdList) {
 			Channel channel = SessionUtils.getChannel(userId);
 			TbUser user = SessionUtils.getUser(channel);
 			if (channel != null) {
 				channelGroup.add(channel);
-				nameList.add(user.getNickName());
+				nameList.add(user.getNickname());
 			}
 		}
 		String groupId = UUID.randomUUID().toString();
