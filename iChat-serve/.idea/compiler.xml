@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="iChat-common" />
+        <module name="iChat-auth-9000" />
         <module name="iChat-chat-9001" />
       </profile>
     </annotationProcessing>

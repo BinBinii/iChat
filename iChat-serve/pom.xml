@@ -10,6 +10,7 @@
     <modules>
         <module>iChat-chat-9001</module>
         <module>iChat-common</module>
+        <module>iChat-auth-9000</module>
     </modules>
 
     <properties>
@@ -31,6 +32,7 @@
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-io.version>2.8.0</commons-io.version>
         <mybatis-puls.version>3.5.2</mybatis-puls.version>
+        <jwt.version>0.10.7</jwt.version>
     </properties>
 
     <packaging>pom</packaging>
