@@ -30,7 +30,6 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<TbFriend> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
         List<TbFriend> tbFriendList = tbFriendMapper.selectList(queryWrapper);
-        System.out.println(tbFriendList.get(0));
         List<TbUser> tbUsers = new ArrayList<>();
         for (TbFriend tbFriend:tbFriendList) {
             TbUser tbUser = tbUserMapper.selectById(tbFriend.getFriend_id());

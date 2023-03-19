@@ -26,7 +26,7 @@ import java.util.List;
 @Accessors(chain = true)
 public class User implements UserDetails {
 
-    private Integer userId;         // 自增ID
+    private String userId;         // 自增ID
     // 用户名
     private String username;
     // 密码

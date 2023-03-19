@@ -18,7 +18,7 @@ public class TbFriend {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;         // 自增ID
 
-    private Integer user_id;
+    private String user_id;
 
-    private Integer friend_id;
+    private String friend_id;
 }

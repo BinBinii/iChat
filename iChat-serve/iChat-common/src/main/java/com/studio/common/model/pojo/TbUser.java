@@ -9,9 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * @Author: BinBin
@@ -22,8 +19,8 @@ import java.util.List;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class TbUser {
-    @TableId(value = "userId", type = IdType.AUTO)
-    private Integer userId;         // 自增ID
+    @TableId
+    private String userId;         // 自增ID
     // 用户名
     private String username;
     // 密码
