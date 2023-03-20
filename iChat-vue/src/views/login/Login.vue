@@ -4,10 +4,10 @@
             <div class="login_title">Sign in to iChat</div>
             <div class="input_box">
                 <p class="input_title">账号</p>
-                <input type="text" placeholder="请输入账号"/>
+                <input type="text" v-model="formInline.username" placeholder="请输入账号"/>
                 <p class="input_title">密码<span style="float: right">忘记密码？</span></p>
-                <input type="password" placeholder="请输入密码"/>
-                <div class="login_btn">立即登录</div>
+                <input type="password" v-model="formInline.password" placeholder="请输入密码"/>
+                <div class="login_btn" @click="handleLogin">立即登录</div>
             </div>
         </div>
         <div class="new_box">
@@ -16,6 +16,31 @@
     </div>
 </template>
 <script lang="ts" setup>
+import { reactive, onMounted } from 'vue'
+import { mainStore } from '../../store'
+import { login } from '../../api/user'
+import { fetchFriendList } from '../../api/friend'
+interface FormState {
+    username: String,
+    password: String
+}
+const store = mainStore()
+const formInline = reactive({
+    username: '',
+    password: ''
+})
+const handleLogin = () => {
+    const { username, password } = formInline
+    const params: FormState = {
+        username,
+        password
+    }
+    login(params).then(res => {
+        console.log(res)
+    })
+}
+onMounted(async () => {
+});
 </script>
 <style lang="less" scoped>
 .login {

@@ -6,17 +6,17 @@ const store = mainStore()
 // 创建axios
 const $http = axios.create({
     //设置默认请求地址
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://127.0.0.1/iChat',
     //设置请求超时时间
     timeout:5000,
     //设置请求头
     headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        'Content-Type': 'application/json;charset=UTF-8'
     }
 })
 
 
-// 请求拦截器
+//请求拦截器
 $http.interceptors.request.use(config => {
     // 验证 token
     const token = store.state.token;
@@ -28,7 +28,6 @@ $http.interceptors.request.use(config => {
 
 //响应拦截
 $http.interceptors.response.use(res => {
-
     // 状态码为200正常返回
     if (res.status === 200) {
         return Promise.resolve(res);
