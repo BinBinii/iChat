@@ -20,7 +20,7 @@ const $http = axios.create({
 $http.interceptors.request.use(config => {
     // 验证 token
     const token = store.state.token;
-    if (config.headers!= undefined) config.headers.Authorization = token
+    if (config.headers != undefined) config.headers.authorization = token
     return config;
 },error => {
     return Promise.reject(error);
@@ -28,9 +28,10 @@ $http.interceptors.request.use(config => {
 
 //响应拦截
 $http.interceptors.response.use(res => {
+    store.state.token = res.headers.authorization
     // 状态码为200正常返回
     if (res.status === 200) {
-        return Promise.resolve(res);
+        return Promise.resolve(res.data);
     } else {
         return Promise.reject(res);
     }

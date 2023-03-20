@@ -36,10 +36,11 @@ const handleLogin = () => {
         password
     }
     login(params).then(res => {
-        console.log(res)
+        console.log(store.state.token)
     })
 }
 onMounted(async () => {
+    
 });
 </script>
 <style lang="less" scoped>

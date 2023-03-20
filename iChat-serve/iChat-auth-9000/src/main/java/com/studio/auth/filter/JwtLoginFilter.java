@@ -74,6 +74,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         sysUser.setRoles((List<Role>) authResult.getAuthorities());
         String token = JwtUtils.generateTokenExpireInMinutes(sysUser,rsaKeyProperties.getPrivateKey(),24*60);
         response.addHeader("Authorization", "iChatToken " + token);	//将Token信息返回给用户
+        response.addHeader("Access-Control-Expose-Headers","Authorization");
         try {
             //登录成功时，返回json格式进行提示
             response.setContentType("application/json;charset=utf-8");
