@@ -11,18 +11,18 @@ import org.springframework.security.core.GrantedAuthority;
 /**
  * @Author: BinBin
  * @Date: 2023/03/15/15:14
- * @Description:
+ * @Description: 权限表
  */
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-public class TbRole implements GrantedAuthority {
+public class TbRole implements GrantedAuthority{
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;         // 自增ID
 
-    private String role_name;
+    private String role_name;   // 规则名称
 
-    private String role_desc;
+    private String role_desc;   // 规则描述
 
     @JsonIgnore
     @Override

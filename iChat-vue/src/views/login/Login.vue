@@ -19,7 +19,6 @@
 import { reactive, onMounted } from 'vue'
 import { mainStore } from '../../store'
 import { login } from '../../api/user'
-import { fetchFriendList } from '../../api/friend'
 interface FormState {
     username: String,
     password: String
@@ -36,7 +35,7 @@ const handleLogin = () => {
         password
     }
     login(params).then(res => {
-        console.log(store.state.token)
+        store.state.token = res.headers.authorization
     })
 }
 onMounted(async () => {

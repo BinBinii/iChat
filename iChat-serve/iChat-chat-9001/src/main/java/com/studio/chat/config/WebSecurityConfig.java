@@ -37,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()  //关闭csrf
+        http.cors().and().csrf().disable()  //关闭csrf
                 .authorizeRequests()
                 .antMatchers("/**").hasAnyRole("USER") //角色信息
                 .anyRequest()   //其它资源

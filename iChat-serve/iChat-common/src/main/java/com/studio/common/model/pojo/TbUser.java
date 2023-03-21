@@ -9,28 +9,30 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 
 /**
  * @Author: BinBin
  * @Date: 2023/03/14/21:59
- * @Description:
+ * @Description: 用户表
  */
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-public class TbUser {
+public class TbUser implements Serializable {
     @TableId
-    private String userId;         // 自增ID
-    // 用户名
-    private String username;
-    // 密码
-    private String password;
-    // 性别
-    private Integer sex;
-    // 头像路径
-    private String image;
+    private String userId;          // 自增ID
 
-    private String nickname;
+    private String username;        // 用户名（账号）
 
-    private Integer status;
+    private String password;        // 密码
+
+    private Integer sex;            // 性别
+
+    private String image;           // 头像
+
+    private String nickname;        // 昵称
+
+    private Integer status;         // 状态
 }
