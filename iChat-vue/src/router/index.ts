@@ -8,6 +8,10 @@ const routes: RouteRecordRaw[] = [{
     path: "/chat",
     name: "chat",
     component: ()=>import("../views/chat/Chat.vue")
+  },{
+    path: "/contacts",
+    name: "contacts",
+    component: ()=>import("../views/contacts/Contacts.vue")
   }
 ]
 

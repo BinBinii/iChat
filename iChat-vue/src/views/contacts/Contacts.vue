@@ -14,32 +14,9 @@
                     <input class="search" v-model="searchInput" placeholder="搜索">
                     <div class="add_person"><span>+</span></div>
                 </div>
-                <div class="chat_records_box">
-                    <template v-for="item in 20">
-                        <div class="chat_records_item" :class="item == 3 ? 'chat_records_item_check': ''" @click="handleChat">
-                            <div class="icon"></div>
-                            <div class="content">
-                                <p>Title</p>
-                                <p>Content</p>
-                                <span>2023/03/11</span>
-                            </div>
-                        </div>
-                    </template>
-                </div>
             </div>
             <div class="chat_item_right">
-                <div v-if="showChat">
-                    <div class="chat_personal_title">
-                        <span>文件传输助手</span>
-                    </div>
-                    <div class="chat_content">
-
-                    </div>
-                    <div class="chat_input">
-                        <div></div>
-                        <textarea></textarea>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -50,17 +27,7 @@ import { mainStore } from '../../store'
 import { fetchFriendList } from '../../api/friend'
 const store = mainStore()
 const searchInput = ref('')
-const showChat = ref(false)
-const handleChat = () => {
-    showChat.value = true
-}
 onMounted(async () => {
-    let parmas = {
-        userId: '4150901'
-    }
-    fetchFriendList(parmas).then(res => {
-        console.log(res)
-    })
 });
 </script>
 <style lang="less" scoped>
@@ -154,98 +121,11 @@ onMounted(async () => {
     top: -9px;
     color: #666;
 }
-.chat_records_box {
-    width: 100%;
-    height: 100%;
-    background-color: #F7F7F7;
-    overflow: auto;
-}
-.chat_records_item {
-    width: 100%;
-    height: 50px;
-    padding: 20px 0px;
-    cursor: default;
-    user-select: none;
-    .icon {
-        width: 50px;
-        height: 50px;
-        background-color: #666;
-        margin-left: 15px;
-        border-radius: 5px;
-        float: left;
-    }
-    .content {
-        text-align: left;
-        width: 77%;
-        height: 50px;
-        float: right;
-        position: relative;
-        p {
-            margin-top: 0px;
-            line-height: 10px;
-        }
-        p:nth-child(1) {
-            margin-top: 4px;
-            font-weight: 500;
-            font-size: 18px;
-        }
-        p:nth-child(2) {
-            color: #ACACAC;
-        }
-        span {
-            position: absolute;
-            right: 20px;
-            top: 0;
-            font-size: 12px;
-            color: #ACACAC;
-        }
-    }
-}
-
-.chat_records_item_check {
-    background-color: #DEDEDE;
-}
 .chat_item_right {
     float: left;
     width: 818.5px;
     height: 100%;
     background-color: #F3F3F3;
-    .chat_personal_title {
-        width: 100%;
-        height: 70px;
-        border-bottom: solid 1.5px #E0E0E0;
-        text-align: left;
-        span {
-            position: relative;
-            top: 20px;
-            left: 30px;
-            font-size: 20px;
-            font-weight: 500;
-        }
-    }
-    .chat_content {
-        width: 100%;
-        height: 580px;
-        overflow: auto;
-    }
-    .chat_input {
-        width: 100%;
-        height: 200px;
-        border-top: solid 1.5px #E0E0E0;
-        div {
-            width: 100%;
-            height: 20%;
-        }
-        textarea {
-            width: 96%;
-            height: 110px;
-            outline: none;
-            border: none;
-            background-color: #F3F3F3;
-            padding: 15px;
-            font-size: 16px;
-            resize: none;
-        }
-    }
+    
 }
 </style>
