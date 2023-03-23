@@ -8,6 +8,9 @@
                     <span class="window_btn" style="background-color: #2BC840;border: solid 1px #1EA824;"></span>
                 </div>
                 <div class="header_icon"></div>
+                <n-icon class="icon" size="33" color="#0DC160" :component="ChatbubbleSharp" />
+                <n-icon @click="skipContacts" class="icon" size="33" color="#766574" :component="PersonOutline" />
+                <n-icon class="icon" size="33" color="#766574" :component="Menu" />
             </div>
             <div class="chat_item_middle">
                 <div class="search_box">
@@ -37,7 +40,7 @@
                     </div>
                     <div class="chat_input">
                         <div></div>
-                        <textarea></textarea>
+                        <textarea v-model="message" @keydown.enter="carriageReturn($event)" v-on:keyup.enter="sendMessage"></textarea>
                     </div>
                 </div>
             </div>
@@ -45,22 +48,45 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive, onMounted, ref, defineComponent } from 'vue'
+import { reactive, onMounted, ref } from 'vue'
 import { mainStore } from '../../store'
-import { fetchFriendList } from '../../api/friend'
+import { useRouter } from 'vue-router'
+import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSocket'
+import { ChatbubbleSharp, PersonOutline, Menu } from '@vicons/ionicons5'
+import { NIcon } from 'naive-ui'
 const store = mainStore()
+const router = useRouter()
 const searchInput = ref('')
+const message = ref('')
+const messageType = ref(1)  // 1是单聊 9是群聊
 const showChat = ref(false)
+const skipContacts = () => {
+    router.push({name: 'contacts'})
+}
 const handleChat = () => {
     showChat.value = true
 }
-onMounted(async () => {
-    let parmas = {
-        userId: '4150901'
+const sendMessage = () => {
+    let data = {
+        type: messageType.value,
+        params: {
+            toMessageId: '4150902',
+            message: message.value,
+            fileType: 0,
+        },
     }
-    fetchFriendList(parmas).then(res => {
-        console.log(res)
-    })
+    message.value = ''
+    sendWebSocket(data)
+}
+const carriageReturn = (event:any) => {
+    if (event.keyCode == 13) {
+        if (!event.metaKey) {
+          event.preventDefault();
+        }
+    }
+}
+onMounted(async () => {
+    creatWebSocket('4150901')
 });
 </script>
 <style lang="less" scoped>
@@ -69,7 +95,7 @@ onMounted(async () => {
     height: 100vh;
     background: url(//res.wx.qq.com/t/wx_fed/webwx/res/static/img/2zrdI1g.jpg) no-repeat 50%;
     background-size: cover;
-    color: #333;
+    color: #191919;
 }
 .chat_box {
     margin: 0 auto;
@@ -87,6 +113,18 @@ onMounted(async () => {
     background-image: linear-gradient(#EBCDE8, #DCC8E8);
     width: 80px;
     height: 100%;
+    position: relative;
+    .icon {
+        margin-top: 30px;
+        margin-left: 24px;
+        display: block;
+        transform:scale(1,0.9); 
+    }
+    .icon:last-child {
+        position: absolute;
+        bottom: 30px;
+        transform:scale(1,1); 
+    }
 }
 .window_btn_box {
     height: 30px;
@@ -242,6 +280,7 @@ onMounted(async () => {
             outline: none;
             border: none;
             background-color: #F3F3F3;
+            color: #191919;
             padding: 15px;
             font-size: 16px;
             resize: none;

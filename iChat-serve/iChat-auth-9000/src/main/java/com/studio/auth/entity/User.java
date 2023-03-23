@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import java.util.List;
  * @Description:
  */
 @Data
-@NoArgsConstructor
 @Accessors(chain = true)
 public class User implements UserDetails {
 

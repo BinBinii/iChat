@@ -30,6 +30,12 @@ public class UserController {
         List<TbUser> result = userService.getFriendListData(userId);
         return Render.ok(result);
     }
+    @Secured("ROLE_USER")
+    @GetMapping("get/info")
+    public Object getUserInfo(@RequestParam("userId") String userId) {
+        TbUser result = userService.getUserInfo(userId);
+        return Render.ok(result);
+    }
 
 
 }

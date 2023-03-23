@@ -48,7 +48,7 @@ onMounted(async () => {
     height: 100vh;
     background: url(//res.wx.qq.com/t/wx_fed/webwx/res/static/img/2zrdI1g.jpg) no-repeat 50%;
     background-size: cover;
-    color: #333;
+    color: #191919;
 }
 .login_box {
     position: absolute;
@@ -85,7 +85,7 @@ onMounted(async () => {
     padding-left: 15px;
     font-size: 16px;
     margin-bottom: 15px;
-    color: #333;
+    color: #191919;
 }
 .login_btn {
     width: 95%;

@@ -16,7 +16,8 @@
     "pinia-plugin-persistedstate": "^3.1.0",
     "qs": "^6.11.1",
     "vue": "^3.2.45",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@vicons/ionicons5": "^0.12.0",

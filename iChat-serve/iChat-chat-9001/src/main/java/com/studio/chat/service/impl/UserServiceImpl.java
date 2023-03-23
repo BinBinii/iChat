@@ -38,4 +38,11 @@ public class UserServiceImpl implements UserService {
         }
         return tbUsers;
     }
+
+    @Override
+    public TbUser getUserInfo(String userId) {
+        TbUser tbUser = tbUserMapper.selectById(userId);
+        tbUser.setPassword("");
+        return tbUser;
+    }
 }
