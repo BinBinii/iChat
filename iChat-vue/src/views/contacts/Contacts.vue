@@ -45,11 +45,11 @@
                         <span class="item_title_number">127</span>
                     </div>
                     <div class="mail_box">
-                        <template v-for="item in 127">
+                        <template v-for="item in friendList">
                             <div class="new_mail_item" @click="handleUserInfo">
                                 <div class="icon"></div>
                                 <div class="content">
-                                    <p>用户昵称</p>
+                                    <p>{{item.nickname}}</p>
                                 </div>
                             </div>
                         </template>
@@ -95,11 +95,16 @@ import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { mainStore } from '../../store'
 import { fetchFriendList } from '../../api/friend'
+import { loginToken } from '../../api/user'
 import { ChatbubbleOutline, Person, Menu, PersonCircle, ChevronForward, ChevronDown } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
+import { UserInfoType } from '../../interface/storeInterface'
+
 const store = mainStore()
 const router = useRouter()
 const searchInput = ref('')
+const userInfo = ref({} as UserInfoType)
+const friendList = ref([] as UserInfoType[])
 const showUserInfo = ref(false)
 const skipChat = () => {
     router.push({name: 'chat'})
@@ -107,7 +112,19 @@ const skipChat = () => {
 const handleUserInfo = () => {
     showUserInfo.value = true
 }
+const getFriendList = () => {
+    let params = {
+        userId: userInfo.value.userId
+    }
+    fetchFriendList(params).then(res => {
+        friendList.value = res.data.data
+    })
+}
 onMounted(async () => {
+    loginToken().then(res => {
+        userInfo.value = res.data.data
+        getFriendList()
+    })
 });
 </script>
 <style lang="less" scoped>

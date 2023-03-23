@@ -1,6 +1,6 @@
 import { fetchUserInfo } from '../api/user'
 
-let userId: String
+let userInfo: any
 let timer: any
 
 /**
@@ -12,8 +12,8 @@ let isConnect = false; // 连接标识 避免重复连接
 let rec: any; // 断线重连后，延迟5秒重新创建WebSocket连接  rec用来存储延迟请求的代码
 
 // 创建websocket
-function creatWebSocket(id: String) {
-  userId = id
+function creatWebSocket(user: any) {
+  userInfo = user
   console.log("websocket==================");
   // 判断当前浏览器是否支持WebSocket
   if ("WebSocket" in window) {
@@ -76,22 +76,17 @@ let reConnect = () => {
   rec && clearTimeout(rec);
   rec = setTimeout(function () {
     // 延迟5秒重连  避免过多次过频繁请求重连
-    creatWebSocket(userId);
+    creatWebSocket(userInfo);
   }, 5000);
 };
 
 // 创建连接
 function websocketOpen(e: any) {
-    let value = {
-        'userId': userId
-    }
-    fetchUserInfo(value).then(res => {
-        let data = {
-            type: 7,
-            params: res.data.data
-        }
-        websocket.send(JSON.stringify(data));
-    })
+  let data = {
+    type: 7,
+    params: userInfo,
+  }
+  websocket.send(JSON.stringify(data))
 }
 // 数据接收
 function websocketonmessage(e: any) {

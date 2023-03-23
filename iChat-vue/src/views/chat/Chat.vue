@@ -48,18 +48,23 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive, onMounted, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { mainStore } from '../../store'
 import { useRouter } from 'vue-router'
 import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSocket'
 import { ChatbubbleSharp, PersonOutline, Menu } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
+import { loginToken } from '../../api/user'
+import { UserInfoType } from '../../interface/storeInterface'
+
 const store = mainStore()
 const router = useRouter()
 const searchInput = ref('')
 const message = ref('')
 const messageType = ref(1)  // 1是单聊 9是群聊
+const userInfo = ref({} as UserInfoType)
 const showChat = ref(false)
+
 const skipContacts = () => {
     router.push({name: 'contacts'})
 }
@@ -86,7 +91,11 @@ const carriageReturn = (event:any) => {
     }
 }
 onMounted(async () => {
-    creatWebSocket('4150901')
+    loginToken().then(res => {
+        userInfo.value = res.data.data
+        creatWebSocket(res.data.data)
+    })
+    
 });
 </script>
 <style lang="less" scoped>

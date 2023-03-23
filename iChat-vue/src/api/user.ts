@@ -9,6 +9,14 @@ export function login(data: object) {
     })
 }
 
+// 根据token获取用户信息
+export function loginToken() {
+    return request({
+        url: '/auth/login/token',
+        method: 'get'
+    })
+}
+
 // 获取用户信息
 export function fetchUserInfo(query: object) {
     return request({

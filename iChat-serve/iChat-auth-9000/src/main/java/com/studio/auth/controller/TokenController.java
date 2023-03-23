@@ -25,8 +25,9 @@ public class TokenController {
 
     @GetMapping("/login/token")
     public Object getUserInfoByToken(HttpServletRequest request) {
-        String token = request.getHeader("token").substring(11);
+        String token = request.getHeader("Authorization").substring(11);
         User user = JwtUtils.getInfoFromToken(token, rsaKeyProperties.getPublicKey(), User.class).getUserInfo();
+        user.setRoles(null);
         return Render.ok(user);
     }
 
