@@ -55,7 +55,7 @@ import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSo
 import { ChatbubbleSharp, PersonOutline, Menu } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
 import { loginToken } from '../../api/user'
-import { UserInfoType } from '../../interface/storeInterface'
+import { UserInfoType, MessageToType } from '../../interface/storeInterface'
 
 const store = mainStore()
 const router = useRouter()
@@ -64,6 +64,7 @@ const message = ref('')
 const messageType = ref(1)  // 1是单聊 9是群聊
 const userInfo = ref({} as UserInfoType)
 const showChat = ref(false)
+const chatingList = ref([] as MessageToType[])
 
 const skipContacts = () => {
     router.push({name: 'contacts'})

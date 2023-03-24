@@ -1,5 +1,9 @@
 package com.studio.common.model.pojo;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,6 +13,9 @@ import java.util.Date;
  * @Description: 群用户关联表
  *
  */
+@Data
+@NoArgsConstructor
+@Accessors(chain = true)
 public class TbGroupToUser implements Serializable {
     private Integer id;             // 自增ID
 

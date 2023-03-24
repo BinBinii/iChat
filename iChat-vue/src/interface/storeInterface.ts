@@ -7,3 +7,9 @@ export interface UserInfoType {
   nickname: String,
   status: Number
 }
+export interface MessageToType {
+  id: Number,
+  userId: String,
+  hand: String,
+  status: Number
+}

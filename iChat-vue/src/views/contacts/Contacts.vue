@@ -22,13 +22,14 @@
                         <n-icon class="icon" size="28" color="#766574" :component="PersonCircle" />
                         <span>通讯录管理</span>
                     </div>
-                    <div class="item_title">
-                        <n-icon class="icon" size="25" color="#B5B5B5" :component="ChevronForward" />
+                    <div class="item_title" @click="handleNewUserList">
+                        <n-icon v-if="!showNewUserListFlag" class="icon" size="25" color="#B5B5B5" :component="ChevronForward" />
+                        <n-icon v-else class="icon" size="25" color="#B5B5B5" :component="ChevronDown" />
                         <span class="item_title_content">新的朋友</span>
                         <span class="item_title_number">1</span>
                     </div>
                     <div class="new_mail_box">
-                        <template v-for="item in 1">
+                        <template v-for="item in 1" v-if="showNewUserListFlag">
                             <div class="new_mail_item">
                                 <div class="icon"></div>
                                 <div class="content">
@@ -39,14 +40,15 @@
                             </div>
                         </template>
                     </div>
-                    <div class="item_title">
-                        <n-icon class="icon" size="25" color="#B5B5B5" :component="ChevronForward" />
+                    <div class="item_title" @click="handleUserList">
+                        <n-icon v-if="!showUserListFlag" class="icon" size="25" color="#B5B5B5" :component="ChevronForward" />
+                        <n-icon v-else class="icon" size="25" color="#B5B5B5" :component="ChevronDown" />
                         <span class="item_title_content">通讯录</span>
-                        <span class="item_title_number">127</span>
+                        <span class="item_title_number">{{ friendList.length }}</span>
                     </div>
                     <div class="mail_box">
-                        <template v-for="item in friendList">
-                            <div class="new_mail_item" @click="handleUserInfo">
+                        <template v-for="(item,index) in friendList" v-if="showUserListFlag">
+                            <div class="new_mail_item" :style="showUserInfoIndex == index ? 'background-color: #DEDEDE':''" @click="handleUserInfo(item.userId, index)">
                                 <div class="icon"></div>
                                 <div class="content">
                                     <p>{{item.nickname}}</p>
@@ -57,11 +59,11 @@
                 </div>
             </div>
             <div class="chat_item_right">
-                <div class="bg" v-if="showUserInfo">
+                <div class="bg" v-if="showUserInfoFlag">
                     <div class="user_info_box">
                         <div class="user_info_box_1">
                             <div class="content">
-                                <span>用户昵称</span>
+                                <span>{{ showUserInfoData.nickname }}</span>
                             </div>
                             <div class="icon"></div>
                         </div>
@@ -76,7 +78,7 @@
                             <div class="content">
                                 <p>备注名</p>
                                 <p>用户所在地区</p>
-                                <p>iChat号码</p>
+                                <p>{{ showUserInfoData.username }}</p>
                                 <p>添加好友来源</p>
                                 <p style="color: #CCC">该功能尚未开通</p>
                             </div>
@@ -95,7 +97,7 @@ import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { mainStore } from '../../store'
 import { fetchFriendList } from '../../api/friend'
-import { loginToken } from '../../api/user'
+import { loginToken, fetchUserInfo } from '../../api/user'
 import { ChatbubbleOutline, Person, Menu, PersonCircle, ChevronForward, ChevronDown } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
 import { UserInfoType } from '../../interface/storeInterface'
@@ -105,12 +107,29 @@ const router = useRouter()
 const searchInput = ref('')
 const userInfo = ref({} as UserInfoType)
 const friendList = ref([] as UserInfoType[])
-const showUserInfo = ref(false)
+const showNewUserListFlag = ref(false)
+const showUserListFlag = ref(false)
+const showUserInfoFlag = ref(false)
+const showUserInfoData = ref({} as UserInfoType)
+const showUserInfoIndex = ref()
 const skipChat = () => {
     router.push({name: 'chat'})
 }
-const handleUserInfo = () => {
-    showUserInfo.value = true
+const handleNewUserList = () => {
+    showNewUserListFlag.value = !showNewUserListFlag.value
+}
+const handleUserList = () => {
+    showUserListFlag.value = !showUserListFlag.value
+}
+const handleUserInfo = (userId: String, index:Number) => {
+    showUserInfoFlag.value = true
+    showUserInfoIndex.value = index
+    let params = {
+        userId: userId
+    }
+    fetchUserInfo(params).then(res => {
+        showUserInfoData.value = res.data.data
+    })
 }
 const getFriendList = () => {
     let params = {
@@ -278,7 +297,7 @@ onMounted(async () => {
         }
     }
     .new_mail_box {
-        width: 290px;
+        width: 100%;
         overflow: hidden;
         margin: 0 auto;
         .new_mail_item {
@@ -289,6 +308,7 @@ onMounted(async () => {
                 width: 50px;
                 height: 50px;
                 background-color: #666;
+                margin-left: 15px;
                 border-radius: 5px;
                 position: relative;
                 top: 15px;
@@ -316,14 +336,14 @@ onMounted(async () => {
             }
             span {
                 position: absolute;
-                right: 0;
+                right: 15px;
                 top: 15px;
                 color: #ACACAC;
             }
         }
     }
     .mail_box {
-        width: 290px;
+        width: 100%;
         overflow: hidden;
         margin: 0 auto;
         .new_mail_item {
@@ -334,6 +354,7 @@ onMounted(async () => {
                 width: 50px;
                 height: 50px;
                 background-color: #666;
+                margin-left: 15px;
                 border-radius: 5px;
                 position: relative;
                 top: 15px;

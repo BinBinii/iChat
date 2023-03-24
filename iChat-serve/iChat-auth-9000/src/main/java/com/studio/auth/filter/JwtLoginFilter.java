@@ -69,10 +69,10 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     //成功之后执行的方法
     @Override
     public void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        User sysUser = (User) authResult.getPrincipal();
-        sysUser.setUsername(authResult.getName());
-        sysUser.setRoles((List<Role>) authResult.getAuthorities());
-        String token = JwtUtils.generateTokenExpireInMinutes(sysUser, rsaKeyProperties.getPrivateKey(),24*60);
+        User user = (User) authResult.getPrincipal();
+        user.setUsername(authResult.getName());
+        user.setRoles((List<Role>) authResult.getAuthorities());
+        String token = JwtUtils.generateTokenExpireInMinutes(user, rsaKeyProperties.getPrivateKey(),24*60);
         response.addHeader("Authorization", "iChatToken " + token);	//将Token信息返回给用户
         response.addHeader("Access-Control-Expose-Headers","Authorization");
         try {

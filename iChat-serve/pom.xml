@@ -11,6 +11,7 @@
         <module>iChat-chat-9001</module>
         <module>iChat-common</module>
         <module>iChat-auth-9000</module>
+        <module>iChat-image-9002</module>
     </modules>
 
     <properties>

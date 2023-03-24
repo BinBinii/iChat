@@ -1,0 +1,18 @@
+server:
+  port: 9002
+  servlet:
+    context-path: /pic
+spring:
+  application:
+    name: image-7004
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+  jackson:
+    default-property-inclusion: non_null
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+pic:
+  dir: /root/data/images/
+

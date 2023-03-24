@@ -66,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()  //关闭csrf
                 .addFilter(new JwtLoginFilter(super.authenticationManager(),rsaKeyProperties))
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);    //禁用session
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
 }

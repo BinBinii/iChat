@@ -1,5 +1,9 @@
 package com.studio.common.model.pojo;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -8,6 +12,9 @@ import java.util.Date;
  * @Date: 2023/03/21/11:13
  * @Description: 群组消息表
  */
+@Data
+@NoArgsConstructor
+@Accessors(chain = true)
 public class TbGroupMessages implements Serializable {
     private Integer id;                 // 自增ID
 
