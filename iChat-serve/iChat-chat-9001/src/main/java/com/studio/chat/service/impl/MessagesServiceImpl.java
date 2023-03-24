@@ -1,10 +1,7 @@
 package com.studio.chat.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.studio.chat.mapper.TbGroupMessagesMapper;
-import com.studio.chat.mapper.TbMessagesMapper;
-import com.studio.chat.mapper.TbMessagesToMapper;
-import com.studio.chat.mapper.TbUserMapper;
+import com.studio.chat.mapper.*;
 import com.studio.chat.service.MessagesService;
 import com.studio.common.model.pojo.TbGroupMessages;
 import com.studio.common.model.pojo.TbMessages;
@@ -32,6 +29,8 @@ public class MessagesServiceImpl implements MessagesService {
     private TbGroupMessagesMapper tbGroupMessagesMapper;
     @Autowired
     private TbUserMapper tbUserMapper;
+    @Autowired
+    private TbGroupMapper tbGroupMapper;
 
     @Override
     public List<MessagesToVo> getMessageToList(String userId) {
@@ -58,7 +57,7 @@ public class MessagesServiceImpl implements MessagesService {
                 QueryWrapper<TbGroupMessages> tbGroupMessagesQueryWrapper = new QueryWrapper<>();
                 tbGroupMessagesQueryWrapper.eq("group_id", tbMessagesTo.getHand()).orderByDesc("create_time");
                 List<TbGroupMessages> tbGroupMessages = tbGroupMessagesMapper.selectList(tbGroupMessagesQueryWrapper);
-                messagesToVo.setNickname(tbGroupMessages.get(0).getFrom_nickname())
+                messagesToVo.setNickname(tbGroupMapper.selectById(tbGroupMessages.get(0).getGroup_id()).getName())
                         .setToMsg(tbGroupMessages.get(0).getText())
                         .setSendTime(tbGroupMessages.get(0).getCreate_time());
                 messagesToVos.add(messagesToVo);

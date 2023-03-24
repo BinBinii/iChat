@@ -18,13 +18,13 @@
                     <div class="add_person"><span>+</span></div>
                 </div>
                 <div class="chat_records_box">
-                    <template v-for="item in 20">
-                        <div class="chat_records_item" :class="item == 3 ? 'chat_records_item_check': ''" @click="handleChat">
+                    <template v-for="item in chatingList">
+                        <div class="chat_records_item" @click="handleChat">
                             <div class="icon"></div>
                             <div class="content">
-                                <p>Title</p>
-                                <p>Content</p>
-                                <span>2023/03/11</span>
+                                <p>{{ item.nickname }}</p>
+                                <p>{{ item.toMsg }}</p>
+                                <span>{{ item.sendTime }}</span>
                             </div>
                         </div>
                     </template>
@@ -55,6 +55,7 @@ import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSo
 import { ChatbubbleSharp, PersonOutline, Menu } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
 import { loginToken } from '../../api/user'
+import { fetchMessagesHistoryList } from '../../api/messages'
 import { UserInfoType, MessageToType } from '../../interface/storeInterface'
 
 const store = mainStore()
@@ -66,6 +67,14 @@ const userInfo = ref({} as UserInfoType)
 const showChat = ref(false)
 const chatingList = ref([] as MessageToType[])
 
+const getMessagesHistoryList = () => {
+    let params = {
+        userId: userInfo.value.userId
+    }
+    fetchMessagesHistoryList(params).then(res => {
+        chatingList.value = res.data.data
+    })
+}
 const skipContacts = () => {
     router.push({name: 'contacts'})
 }
@@ -94,6 +103,7 @@ const carriageReturn = (event:any) => {
 onMounted(async () => {
     loginToken().then(res => {
         userInfo.value = res.data.data
+        getMessagesHistoryList()
         creatWebSocket(res.data.data)
     })
     

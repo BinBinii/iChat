@@ -11,5 +11,8 @@ export interface MessageToType {
   id: Number,
   userId: String,
   hand: String,
-  status: Number
+  status: Number,
+  nickname: String,
+  toMsg: String,
+  sendTime: Date
 }

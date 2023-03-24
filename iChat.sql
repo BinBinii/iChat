@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 21/03/2023 13:52:10
+ Date: 24/03/2023 20:40:59
 */
 
 SET NAMES utf8mb4;
@@ -117,12 +117,14 @@ CREATE TABLE `tb_messages` (
   `from_user` varchar(30) NOT NULL COMMENT '发送人ID',
   `to_user` varchar(30) NOT NULL COMMENT '接收人ID',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Records of tb_messages
 -- ----------------------------
 BEGIN;
+INSERT INTO `tb_messages` (`id`, `post_message`, `status`, `send_time`, `from_user`, `to_user`) VALUES (1, 'Hello World!', b'0', '2023-03-24 11:19:48', '4150901', '4150902');
+INSERT INTO `tb_messages` (`id`, `post_message`, `status`, `send_time`, `from_user`, `to_user`) VALUES (2, 'Hello', b'0', '2023-03-24 18:31:42', '4150902', '4150901');
 COMMIT;
 
 -- ----------------------------
@@ -135,12 +137,13 @@ CREATE TABLE `tb_messages_to` (
   `hand` varchar(50) NOT NULL COMMENT '指向用户或者群组',
   `status` bit(1) NOT NULL COMMENT '0:用户 1:群组',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Records of tb_messages_to
 -- ----------------------------
 BEGIN;
+INSERT INTO `tb_messages_to` (`id`, `userId`, `hand`, `status`) VALUES (1, '4150901', '4150902', b'0');
 COMMIT;
 
 -- ----------------------------
@@ -205,6 +208,7 @@ CREATE TABLE `tb_user_role` (
 BEGIN;
 INSERT INTO `tb_user_role` (`user_id`, `role_id`) VALUES (1, 1);
 INSERT INTO `tb_user_role` (`user_id`, `role_id`) VALUES (4150901, 1);
+INSERT INTO `tb_user_role` (`user_id`, `role_id`) VALUES (4150901, 3);
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
