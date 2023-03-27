@@ -7,10 +7,7 @@ import com.studio.common.model.vo.MessagesVo;
 import com.studio.common.model.vo.Render;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +35,16 @@ public class MessageController {
     public Object getMessagesList(@RequestParam("userId") String userId, @RequestParam("hand") String hand) {
         List<MessagesVo> result = messageService.getMessages(userId, hand);
         return Render.ok(result);
+    }
+
+    @Secured("ROLE_USER")
+    @PostMapping("new/to")
+    public Object newMessagesTo(@RequestParam("userId") String userId, @RequestParam("hand") String hand, @RequestParam("status") Integer status) {
+        boolean result = messageService.newMessagesTo(userId, hand, status);
+        if (!result) {
+            return Render.fail("创建聊天失败");
+        }
+        return Render.ok(true);
     }
 
 }

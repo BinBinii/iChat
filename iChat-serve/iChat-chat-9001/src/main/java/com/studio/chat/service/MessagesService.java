@@ -31,4 +31,12 @@ public interface MessagesService {
      */
     List<MessagesVo> getMessages(String fromUser, String toUser);
 
+    /**
+     * 新建聊天记录
+     * @param userId
+     * @param hand
+     * @return
+     */
+    boolean newMessagesTo(String userId, String hand, Integer status);
+
 }

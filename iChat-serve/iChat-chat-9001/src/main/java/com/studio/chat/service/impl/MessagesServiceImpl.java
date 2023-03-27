@@ -50,17 +50,26 @@ public class MessagesServiceImpl implements MessagesService {
                 tbMessagesQueryWrapper.eq("from_user", tbMessagesTo.getUserId()).eq("to_user", tbMessagesTo.getHand())
                         .or().eq("from_user", tbMessagesTo.getHand()).eq("to_user", tbMessagesTo.getUserId()).orderByDesc("send_time");
                 List<TbMessages> tbMessages = tbMessagesMapper.selectList(tbMessagesQueryWrapper);
-                messagesToVo.setNickname(tbUserMapper.selectById(tbMessagesTo.getHand()).getNickname())
-                        .setToMsg(tbMessages.get(0).getPost_message())
-                        .setSendTime(tbMessages.get(0).getSend_time());
+                if (tbMessages.size() > 0) {
+                    messagesToVo.setNickname(tbUserMapper.selectById(tbMessagesTo.getHand()).getNickname())
+                            .setToMsg(tbMessages.get(0).getPost_message())
+                            .setSendTime(tbMessages.get(0).getSend_time());
+                } else {
+                    messagesToVo.setNickname(tbUserMapper.selectById(tbMessagesTo.getHand()).getNickname())
+                            .setToMsg("")
+                            .setSendTime(null);
+                }
                 messagesToVos.add(messagesToVo);
             } else if (tbMessagesTo.getStatus().equals(1)) {
                 QueryWrapper<TbGroupMessages> tbGroupMessagesQueryWrapper = new QueryWrapper<>();
                 tbGroupMessagesQueryWrapper.eq("group_id", tbMessagesTo.getHand()).orderByDesc("create_time");
                 List<TbGroupMessages> tbGroupMessages = tbGroupMessagesMapper.selectList(tbGroupMessagesQueryWrapper);
-                messagesToVo.setNickname(tbGroupMapper.selectById(tbGroupMessages.get(0).getGroup_id()).getName())
-                        .setToMsg(tbGroupMessages.get(0).getText())
-                        .setSendTime(tbGroupMessages.get(0).getCreate_time());
+                if (tbGroupMessages.size() > 0) {
+                    messagesToVo.setNickname(tbGroupMapper.selectById(tbGroupMessages.get(0).getGroup_id()).getName())
+                            .setToMsg(tbGroupMessages.get(0).getText())
+                            .setSendTime(tbGroupMessages.get(0).getCreate_time());
+
+                }
                 messagesToVos.add(messagesToVo);
             }
         }
@@ -86,5 +95,17 @@ public class MessagesServiceImpl implements MessagesService {
             messagesVos.add(messagesVo);
         }
         return messagesVos;
+    }
+
+    @Override
+    public boolean newMessagesTo(String userId, String hand, Integer status) {
+        if (userId.isEmpty() || hand.isEmpty()) {
+            return false;
+        }
+        TbMessagesTo tbMessagesTo = new TbMessagesTo();
+        tbMessagesTo.setUserId(userId)
+                .setHand(hand)
+                .setStatus(status);
+        return tbMessageToMapper.insert(tbMessagesTo) == 1;
     }
 }

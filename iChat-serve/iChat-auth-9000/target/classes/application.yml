@@ -19,5 +19,5 @@ logging:
 # 下面几个是自定义的，rsa也是自定义的
 rsa:
   key:
-    pubKeyPath: /Users/binbini/Documents/workspace/iChat/iChat-serve/auth_key/id_key_rsa.pub
-    priKeyPath: /Users/binbini/Documents/workspace/iChat/iChat-serve/auth_key/id_key_rsa
+    pubKeyPath: /root/data/auth_key/id_key_rsa.pub
+    priKeyPath: /root/data/auth_key/id_key_rsa

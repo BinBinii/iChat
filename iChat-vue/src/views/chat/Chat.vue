@@ -152,6 +152,9 @@ const carriageReturn = (event:any) => {
 }
 const formatDate = (time:Date) => {
     let times = new Date(time)
+    if (time == null) {
+        return ''
+    }
     if (times.toDateString() === new Date().toDateString()) {
         return (times.getHours() < 10 ? '0' + times.getHours() : times.getHours()) + ':' + (times.getMinutes() < 10 ? '0' + times.getMinutes : times.getMinutes())
     } else {

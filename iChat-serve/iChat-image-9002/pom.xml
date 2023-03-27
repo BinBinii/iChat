@@ -32,7 +32,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.studio.image.ImageApplication_7004</mainClass>
+                    <mainClass>com.studio.image.ImageApplication_9002</mainClass>
                 </configuration>
                 <executions>
                     <execution>

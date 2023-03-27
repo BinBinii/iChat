@@ -1,7 +1,10 @@
 package com.studio.image;
 
+import com.studio.image.config.RsaKeyProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -12,10 +15,11 @@ import org.springframework.web.filter.CorsFilter;
  * @Date: 2022/10/08/10:32
  * @Description:
  */
-@SpringBootApplication
-public class ImageApplication_7004 {
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@EnableConfigurationProperties(RsaKeyProperties.class)
+public class ImageApplication_9002 {
     public static void main(String[] args) {
-        SpringApplication.run(ImageApplication_7004.class, args);
+        SpringApplication.run(ImageApplication_9002.class, args);
     }
 
     @Bean

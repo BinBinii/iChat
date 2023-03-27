@@ -76,7 +76,7 @@ public class FileService {
         try {
             InetAddress address = InetAddress.getLocalHost();
 //            String fileUrl = "http://" + "www.binbini.xyz" + "/resource" + contextPath + "/file/" + fileName;
-            String fileUrl = "http://" + "120.78.157.152/resource" + contextPath + "/file/" + fileName;
+            String fileUrl = "http://" + "8.130.48.130:9002" + contextPath + "/file/" + fileName;
             return fileUrl;
         } catch (UnknownHostException e) {
             log.error("get host error,{}", e.getMessage());
