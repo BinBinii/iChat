@@ -16,3 +16,12 @@ export interface MessageToType {
   toMsg: String,
   sendTime: Date
 }
+export interface MessageType {
+  id: Number,
+  post_message: String,
+  status: Number,
+  send_time: Date,
+  from_user: String,
+  to_user: String,
+  from_user_nickname: String
+}

@@ -84,7 +84,7 @@
                             </div>
                         </div>
                         <div class="user_info_box_3">
-                            <div class="message">发消息</div>
+                            <div class="message" @click="goChating">发消息</div>
                         </div>
                     </div>
                 </div>
@@ -138,6 +138,10 @@ const getFriendList = () => {
     fetchFriendList(params).then(res => {
         friendList.value = res.data.data
     })
+}
+const goChating = () => {
+    store.state.routerChating = showUserInfoData.value.userId.toString()
+    skipChat()
 }
 onMounted(async () => {
     loginToken().then(res => {

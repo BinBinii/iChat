@@ -7,6 +7,7 @@ import com.studio.common.model.pojo.TbGroupMessages;
 import com.studio.common.model.pojo.TbMessages;
 import com.studio.common.model.pojo.TbMessagesTo;
 import com.studio.common.model.vo.MessagesToVo;
+import com.studio.common.model.vo.MessagesVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class MessagesServiceImpl implements MessagesService {
                 tbMessagesQueryWrapper.eq("from_user", tbMessagesTo.getUserId()).eq("to_user", tbMessagesTo.getHand())
                         .or().eq("from_user", tbMessagesTo.getHand()).eq("to_user", tbMessagesTo.getUserId()).orderByDesc("send_time");
                 List<TbMessages> tbMessages = tbMessagesMapper.selectList(tbMessagesQueryWrapper);
-                messagesToVo.setNickname(tbUserMapper.selectById(tbMessages.get(0).getFrom_user()).getNickname())
+                messagesToVo.setNickname(tbUserMapper.selectById(tbMessagesTo.getHand()).getNickname())
                         .setToMsg(tbMessages.get(0).getPost_message())
                         .setSendTime(tbMessages.get(0).getSend_time());
                 messagesToVos.add(messagesToVo);
@@ -64,5 +65,26 @@ public class MessagesServiceImpl implements MessagesService {
             }
         }
         return messagesToVos;
+    }
+
+    @Override
+    public List<MessagesVo> getMessages(String userId, String hand) {
+        QueryWrapper<TbMessages> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("from_user", userId).eq("to_user", hand)
+                .or().eq("from_user", hand).eq("to_user", userId).orderByAsc("send_time");
+        List<TbMessages> tbMessagesList = tbMessagesMapper.selectList(queryWrapper);
+        List<MessagesVo> messagesVos = new ArrayList<>();
+        for (TbMessages tbMessages:tbMessagesList) {
+            MessagesVo messagesVo = new MessagesVo();
+            messagesVo.setId(tbMessages.getId())
+                    .setPost_message(tbMessages.getPost_message())
+                    .setStatus(tbMessages.getStatus())
+                    .setSend_time(tbMessages.getSend_time())
+                    .setFrom_user(tbMessages.getFrom_user())
+                    .setTo_user(tbMessages.getTo_user())
+                    .setFrom_user_nickname(tbUserMapper.selectById(tbMessages.getFrom_user()).getNickname());
+            messagesVos.add(messagesVo);
+        }
+        return messagesVos;
     }
 }

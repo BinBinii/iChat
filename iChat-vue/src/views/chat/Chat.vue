@@ -18,13 +18,13 @@
                     <div class="add_person"><span>+</span></div>
                 </div>
                 <div class="chat_records_box">
-                    <template v-for="item in chatingList">
-                        <div class="chat_records_item" @click="handleChat">
+                    <template v-for="(item,index) in chatingList">
+                        <div class="chat_records_item" :class="showChatingIndex == index?'chat_records_item_check':''" @click="handleChat(item.userId, item.hand, item.nickname, index)">
                             <div class="icon"></div>
                             <div class="content">
                                 <p>{{ item.nickname }}</p>
                                 <p>{{ item.toMsg }}</p>
-                                <span>{{ item.sendTime }}</span>
+                                <span>{{ formatDate(item.sendTime) }}</span>
                             </div>
                         </div>
                     </template>
@@ -33,10 +33,30 @@
             <div class="chat_item_right">
                 <div v-if="showChat">
                     <div class="chat_personal_title">
-                        <span>文件传输助手</span>
+                        <span>{{ chatingTitle }}</span>
                     </div>
                     <div class="chat_content">
-
+                        <template v-for="item in chating">
+                            <div class="user_box" v-if="item.from_user === userInfo.userId">
+                                <div class="icon"></div>
+                                <div>
+                                    <div class="chat_msg">
+                                        <div class="chat_triangle"></div>
+                                        <span>{{ item.post_message }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hand_box" v-else>
+                                <div class="icon"></div>
+                                <div>
+                                    <span class="hand_nickname">{{ item.from_user_nickname }}</span>
+                                    <div class="chat_msg">
+                                        <div class="chat_triangle"></div>
+                                        <span>{{ item.post_message }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div class="chat_input">
                         <div></div>
@@ -54,9 +74,9 @@ import { useRouter } from 'vue-router'
 import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSocket'
 import { ChatbubbleSharp, PersonOutline, Menu } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
-import { loginToken } from '../../api/user'
-import { fetchMessagesHistoryList } from '../../api/messages'
-import { UserInfoType, MessageToType } from '../../interface/storeInterface'
+import { loginToken, fetchUserInfo } from '../../api/user'
+import { fetchMessagesHistoryList, fetchMessages } from '../../api/messages'
+import { UserInfoType, MessageToType, MessageType } from '../../interface/storeInterface'
 
 const store = mainStore()
 const router = useRouter()
@@ -66,6 +86,9 @@ const messageType = ref(1)  // 1是单聊 9是群聊
 const userInfo = ref({} as UserInfoType)
 const showChat = ref(false)
 const chatingList = ref([] as MessageToType[])
+const chating = ref([] as MessageType[])
+const chatingTitle = ref('' as String)
+const showChatingIndex = ref(-1 as Number)
 
 const getMessagesHistoryList = () => {
     let params = {
@@ -73,13 +96,40 @@ const getMessagesHistoryList = () => {
     }
     fetchMessagesHistoryList(params).then(res => {
         chatingList.value = res.data.data
+        if (store.state.routerChating != '') {
+            fetchUserInfo({
+                userId: store.state.routerChating
+            }).then(res => {
+                let chatUser:UserInfoType = res.data.data
+                handleChat(userInfo.value.userId, chatUser.userId, chatUser.nickname, 0)
+            })
+        }
+    })
+}
+const getMessages = (userId: String, hand: String) => {
+    let params = {
+        userId: userId,
+        hand: hand
+    }
+    fetchMessages(params).then(res => {
+        chating.value = res.data.data
+    })
+}
+const getUserInfo = (userId: String) => {
+    let params = {
+        userId: userId
+    }
+    fetchUserInfo(params).then(res => {
     })
 }
 const skipContacts = () => {
     router.push({name: 'contacts'})
 }
-const handleChat = () => {
+const handleChat = (userId: String, hand: String, nickname: String, index: Number) => {
+    showChatingIndex.value = index
     showChat.value = true
+    chatingTitle.value = nickname
+    getMessages(userId, hand)
 }
 const sendMessage = () => {
     let data = {
@@ -98,6 +148,14 @@ const carriageReturn = (event:any) => {
         if (!event.metaKey) {
           event.preventDefault();
         }
+    }
+}
+const formatDate = (time:Date) => {
+    let times = new Date(time)
+    if (times.toDateString() === new Date().toDateString()) {
+        return (times.getHours() < 10 ? '0' + times.getHours() : times.getHours()) + ':' + (times.getMinutes() < 10 ? '0' + times.getMinutes : times.getMinutes())
+    } else {
+        return times.getFullYear() + '/' + (times.getMonth() < 10 ? '0' + times.getMonth() : times.getMonth()) + '/' + (times.getDay() < 10 ? '0' + times.getDay() : times.getDay())
     }
 }
 onMounted(async () => {
@@ -256,6 +314,7 @@ onMounted(async () => {
             top: 0;
             font-size: 12px;
             color: #ACACAC;
+            letter-spacing: .2px;
         }
     }
 }
@@ -285,6 +344,86 @@ onMounted(async () => {
         width: 100%;
         height: 580px;
         overflow: auto;
+        .hand_box {
+            padding-top: 20px;
+            padding-bottom: 10px;
+            width: 100%;
+            overflow: hidden;
+            clear: both;
+            * {
+                float: left;
+            }
+            .icon {
+                margin-left: 20px;
+                margin-right: 15px;
+            }
+            .hand_nickname {
+                margin-top: -3px;
+                // margin-bottom: 3px;
+                color: #AAAAAA;
+                user-select: none;
+            }
+            .chat_msg {
+                clear: both;
+                background-color: #FFF;
+                padding: 10px 15px;
+                font-size: 16px;
+                border-radius: 5px;
+                position: relative;
+                max-width: 400px;
+                text-align: left;
+            }
+            .chat_triangle {
+                width: 0;
+                height: 0;
+                border-top: 10px solid #FFF;
+                border-right: 10px solid transparent;
+                border-left: 10px solid transparent;
+                transform: rotate(90deg);
+                position: absolute;
+                left: -10px;
+                top: 15px;
+            }
+        }
+        .user_box {
+            padding-top: 20px;
+            padding-bottom: 10px;
+            width: 100%;
+            overflow: hidden;
+            clear: both;
+            * {
+                float: right;
+            }
+            .icon {
+                margin-right: 20px;
+                margin-left: 15px;
+            }
+            .chat_msg {
+                clear: both;
+                background-color: #95EC69;
+                padding: 10px 15px;
+                font-size: 16px;
+                border-radius: 5px;
+                position: relative;
+            }
+            .chat_triangle {
+                width: 0;
+                height: 0;
+                border-top: 10px solid #95EC69;
+                border-right: 10px solid transparent;
+                border-left: 10px solid transparent;
+                transform: rotate(-90deg);
+                position: absolute;
+                right: -10px;
+                top: 15px;
+            }
+        }
+        .icon {
+            width: 40px;
+            height: 40px;
+            background-color: #666;
+            border-radius: 3px;
+        }
     }
     .chat_input {
         width: 100%;

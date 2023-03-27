@@ -7,3 +7,10 @@ export function fetchMessagesHistoryList(query: object) {
         params: query
     })
 }
+export function fetchMessages(query: object) {
+    return request({
+        url: '/msg/list',
+        method: 'get',
+        params: query
+    })
+}

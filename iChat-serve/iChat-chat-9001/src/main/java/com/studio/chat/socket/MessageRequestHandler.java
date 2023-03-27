@@ -29,6 +29,7 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
 		if (toUserChannel != null && SessionUtils.hasLogin(toUserChannel)) {
 			message = messageRequestPacket.getMessage(); 
 		} else {
+			// TODO 消息进入mq队列
 			message = "当前用户："+messageRequestPacket.getToUserId()+"不在线！";
 			System.err.println(message);
 		}

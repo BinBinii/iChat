@@ -1,7 +1,9 @@
 package com.studio.chat.service;
 
+import com.studio.common.model.pojo.TbMessages;
 import com.studio.common.model.pojo.TbMessagesTo;
 import com.studio.common.model.vo.MessagesToVo;
+import com.studio.common.model.vo.MessagesVo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,5 +22,13 @@ public interface MessagesService {
      * @return
      */
     List<MessagesToVo> getMessageToList(String userId);
+
+    /**
+     * 获取聊天
+     * @param fromUser
+     * @param toUser
+     * @return
+     */
+    List<MessagesVo> getMessages(String fromUser, String toUser);
 
 }

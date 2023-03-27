@@ -18,7 +18,8 @@ export const mainStore = defineStore('main', {
     state: () => {
         return {
             state: {
-                token: ''
+                token: '',
+                routerChating: ''
             }
         }
     },
