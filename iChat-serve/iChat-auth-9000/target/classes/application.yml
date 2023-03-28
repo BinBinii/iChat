@@ -11,6 +11,8 @@ spring:
 
 mybatis-plus:
   type-aliases-package: com.studio.common.model.pojo
+  configuration:
+    map-underscore-to-camel-case: false
 
 logging:
   level:
@@ -19,5 +21,9 @@ logging:
 # 下面几个是自定义的，rsa也是自定义的
 rsa:
   key:
-    pubKeyPath: /root/data/auth_key/id_key_rsa.pub
-    priKeyPath: /root/data/auth_key/id_key_rsa
+    pubKeyPath: /Users/binbini/Documents/workspace/iChat/iChat-serve/auth_key/id_key_rsa.pub
+    priKeyPath: /Users/binbini/Documents/workspace/iChat/iChat-serve/auth_key/id_key_rsa
+#rsa:
+#  key:
+#    pubKeyPath: /root/data/auth_key/id_key_rsa.pub
+#    priKeyPath: /root/data/auth_key/id_key_rsa

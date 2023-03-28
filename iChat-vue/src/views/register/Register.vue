@@ -1,58 +1,77 @@
 <template>
-    <div class="login">
-        <div class="login_box">
-            <div class="login_title">Sign in to iChat</div>
+    <div class="register">
+        <div class="register_box">
+            <div class="register_title">Sign up to iChat</div>
             <div class="input_box">
                 <p class="input_title">账号</p>
                 <input type="text" v-model="formInline.username" placeholder="请输入账号"/>
-                <p class="input_title">密码<span style="float: right">忘记密码？</span></p>
+                <p class="input_title">密码</p>
                 <input type="password" v-model="formInline.password" placeholder="请输入密码"/>
-                <div class="login_btn" @click="handleLogin">立即登录</div>
+                <p class="input_title">密码</p>
+                <input type="password" v-model="formInline.affirmPass" placeholder="确认密码"/>
+                <div>
+                    <div class="register_btn" @click="handleRegister">立即注册</div>
+                    <div class="back_btn" @click="router.push({name: 'login'})">返回登录</div>
+                </div>
             </div>
-        </div>
-        <div class="new_box" @click="router.push({name: 'register'})">
-            <p>初来乍到iChat?<span> 创建账号</span></p>
         </div>
     </div>
 </template>
 <script lang="ts" setup>
 import { reactive, onMounted } from 'vue'
-import { mainStore } from '../../store'
 import { useRouter } from 'vue-router'
-import { login } from '../../api/user'
+import { mainStore } from '../../store'
+import { register } from '../../api/user'
+import { useNotification, NotificationType } from 'naive-ui'
 interface FormState {
     username: String,
-    password: String
+    password: String,
+    affirmPass: String
 }
 const router = useRouter()
 const store = mainStore()
+const notification = useNotification()
 const formInline = reactive({
     username: '',
-    password: ''
+    password: '',
+    affirmPass: ''
 })
-const handleLogin = () => {
-    const { username, password } = formInline
-    const params: FormState = {
-        username,
-        password
+const handleRegister = () => {
+    const { username, password, affirmPass } = formInline
+    // const params: FormState = {
+    //     username,
+    //     password,
+    //     affirmPass
+    // }
+    let params = {
+        username: username,
+        password: password
     }
-    login(params).then(res => {
-        store.state.token = res.headers.authorization
+    if (password != affirmPass) {
+        return false
+    }
+    register(params).then(res => {
+        if (res.data.code == 200) {
+            
+        } else {
+
+        }
     })
 }
+const notify = 
 onMounted(async () => {
     
 });
 </script>
 <style lang="less" scoped>
-.login {
+.register {
     width: 100vw;
     height: 100vh;
     background: url(//res.wx.qq.com/t/wx_fed/webwx/res/static/img/2zrdI1g.jpg) no-repeat 50%;
     background-size: cover;
     color: #191919;
 }
-.login_box {
+.register_box {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -61,10 +80,10 @@ onMounted(async () => {
     border-radius: 8px;
     background-color: rgb(255, 255, 255);
     width: 470px;
-    height: 480px;
+    height: 600px;
     box-shadow: rgb(153, 153, 153) 0px 2px 10px;
 }
-.login_title {
+.register_title {
     margin-top: 50px;
     font-size: 1.8rem;
 }
@@ -89,11 +108,11 @@ onMounted(async () => {
     margin-bottom: 15px;
     color: #191919;
 }
-.login_btn {
-    width: 95%;
+.register_btn {
+    float: right;
+    width: 48%;
     height: 45px;
     border-radius: 8px;
-    padding-left: 15px;
     color: #FFF;
     background-color: #238636;
     line-height: 45px;
@@ -101,22 +120,22 @@ onMounted(async () => {
     margin-top: 15px;
     cursor: pointer;
 }
-.login_btn:hover {
-    background-color: #2DA042;
-}
-.new_box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-left: -235px;
-    margin-top: 170px;
+.back_btn {
+    float: left;
+    width: 48%;
+    height: 45px;
     border-radius: 8px;
-    background-color: rgb(255, 255, 255);
-    width: 470px;
-    height: 70px;
-    box-shadow: rgb(153, 153, 153) 0px 2px 10px;
+    color: #333;
+    background-color: #FFF;
+    border: solid #666 1px;
+    line-height: 45px;
     font-size: 18px;
-    line-height: 35px;
+    margin-top: 15px;
+    text-align: center;
+    cursor: pointer;
+}
+.register_btn:hover {
+    background-color: #2DA042;
 }
 span {
     color: #57A6FF;

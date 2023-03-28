@@ -9,6 +9,15 @@ export function login(data: object) {
     })
 }
 
+// 注册
+export function register(data: object) {
+    return request({
+        url: '/auth/register',
+        method: 'post',
+        data
+    })
+}
+
 // 根据token获取用户信息
 export function loginToken() {
     return request({
