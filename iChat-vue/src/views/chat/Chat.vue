@@ -2,12 +2,13 @@
     <div class="chat">
         <div class="chat_box">
             <div class="chat_item_left">
+                <UserInfoPopup v-if="showUserInfoPopup" />
                 <div class="window_btn_box">
                     <span class="window_btn" style="background-color: #FE5F57;border: solid 1px #E09C1B;"></span>
                     <span class="window_btn" style="background-color: #FEBC2E;border: solid 1px #E09B19;"></span>
                     <span class="window_btn" style="background-color: #2BC840;border: solid 1px #1EA824;"></span>
                 </div>
-                <div class="header_icon"></div>
+                <div class="header_icon" @click="showUserInfoPopup = !showUserInfoPopup"></div>
                 <n-icon class="icon" size="33" color="#0DC160" :component="ChatbubbleSharp" />
                 <n-icon @click="skipContacts" class="icon" size="33" color="#766574" :component="PersonOutline" />
                 <n-icon class="icon" size="33" color="#766574" :component="Menu" />
@@ -35,7 +36,7 @@
                     <div class="chat_personal_title">
                         <span>{{ chatingTitle }}</span>
                     </div>
-                    <div class="chat_content">
+                    <div class="chat_content" ref="chatContent">
                         <template v-for="item in chating">
                             <div class="user_box" v-if="item.from_user === userInfo.userId">
                                 <div class="icon"></div>
@@ -59,25 +60,52 @@
                         </template>
                     </div>
                     <div class="chat_input">
-                        <div></div>
+                        <div>
+                            <n-icon class="icon" size="28" color="#766574" :component="MoodHappy" />
+                        </div>
                         <textarea v-model="message" @keydown.enter="carriageReturn($event)" v-on:keyup.enter="sendMessage"></textarea>
                     </div>
                 </div>
             </div>
         </div>
+        <n-modal v-if="userInfo.nickname==''" v-model:show="showUserIndividualizationModal" transform-origin="center">
+            <div class="showUserIndiv_box">
+                <p class="title">完善个人信息</p>
+                <span>该怎么称呼你：</span>
+                <input type="text" placeholder="昵称" />
+                <span>你的性别是：</span>
+                    <div class="sex_box">
+                        <!-- <n-radio-group v-model="userInfo.sex" name="sexradiogroup">
+                            <n-radio value="1">男</n-radio>
+                            <n-radio value="0">女</n-radio>
+                        </n-radio-group> -->
+                    </div>
+                <span>你的头像：</span>
+                <n-upload
+                    style="margin-left: 200px;"
+                    action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
+                    list-type="image-card"
+                    @preview="handlePreview"
+                />
+                <div class="userIndivConfirm">确定</div>
+            </div>
+        </n-modal>
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, Component } from 'vue'
 import { mainStore } from '../../store'
 import { useRouter } from 'vue-router'
-import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSocket'
 import { ChatbubbleSharp, PersonOutline, Menu } from '@vicons/ionicons5'
-import { NIcon } from 'naive-ui'
+import { MoodHappy } from '@vicons/tabler'
+import { NIcon, NModal, NRadio, NRadioGroup, NUpload } from 'naive-ui'
+
+import UserInfoPopup  from '../../components/UserInfoPopup.vue'
+
 import { loginToken, fetchUserInfo } from '../../api/user'
 import { fetchMessagesHistoryList, fetchMessages } from '../../api/messages'
 import { UserInfoType, MessageToType, MessageType } from '../../interface/storeInterface'
-
+import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSocket'
 const store = mainStore()
 const router = useRouter()
 const searchInput = ref('')
@@ -88,8 +116,16 @@ const showChat = ref(false)
 const chatingList = ref([] as MessageToType[])
 const chating = ref([] as MessageType[])
 const chatingTitle = ref('' as String)
-const showChatingIndex = ref(-1 as Number)
+const selectHand = ref('' as String)
+const showChatingIndex = ref(-1 as any)
+const showUserIndividualizationModal = ref(true)
+const showUserInfoPopup = ref(false)
 
+const chatContent = ref()
+
+const handlePreview = () => {
+    
+}
 const getMessagesHistoryList = () => {
     let params = {
         userId: userInfo.value.userId
@@ -113,6 +149,9 @@ const getMessages = (userId: String, hand: String) => {
     }
     fetchMessages(params).then(res => {
         chating.value = res.data.data
+        setTimeout(() => {
+            chatContent.value.scrollTop = chatContent.value.scrollHeight
+        },10)
     })
 }
 const getUserInfo = (userId: String) => {
@@ -126,6 +165,7 @@ const skipContacts = () => {
     router.push({name: 'contacts'})
 }
 const handleChat = (userId: String, hand: String, nickname: String, index: Number) => {
+    selectHand.value = hand
     showChatingIndex.value = index
     showChat.value = true
     chatingTitle.value = nickname
@@ -135,13 +175,28 @@ const sendMessage = () => {
     let data = {
         type: messageType.value,
         params: {
-            toMessageId: '4150902',
+            toMessageId: selectHand.value,
+            fromMessageId: userInfo.value.userId,
             message: message.value,
             fileType: 0,
         },
     }
+    let item:MessageType = {
+        id: -1,
+        post_message: data.params.message,
+        status: 0,
+        send_time: new Date(),
+        from_user: data.params.fromMessageId,
+        to_user: data.params.toMessageId,
+        from_user_nickname: userInfo.value.nickname
+    }
+    chating.value.push(item)
     message.value = ''
+    chatingList.value[showChatingIndex.value].toMsg = data.params.message
     sendWebSocket(data)
+    setTimeout(() => {
+        chatContent.value.scrollTop = chatContent.value.scrollHeight
+    },1000)
 }
 const carriageReturn = (event:any) => {
     if (event.keyCode == 13) {
@@ -156,7 +211,7 @@ const formatDate = (time:Date) => {
         return ''
     }
     if (times.toDateString() === new Date().toDateString()) {
-        return (times.getHours() < 10 ? '0' + times.getHours() : times.getHours()) + ':' + (times.getMinutes() < 10 ? '0' + times.getMinutes : times.getMinutes())
+        return (times.getHours() < 10 ? '0' + times.getHours() : times.getHours()) + ':' + (times.getMinutes() < 10 ? '0' + times.getMinutes() : times.getMinutes())
     } else {
         return times.getFullYear() + '/' + (times.getMonth() < 10 ? '0' + times.getMonth() : times.getMonth()) + '/' + (times.getDay() < 10 ? '0' + times.getDay() : times.getDay())
     }
@@ -166,9 +221,53 @@ onMounted(async () => {
         userInfo.value = res.data.data
         getMessagesHistoryList()
         creatWebSocket(res.data.data)
+        store.state.websocket.onmessage = function (e: any) {
+            websocketonmessage(e);
+        };
     })
-    
 });
+const websocketonmessage = (e: any) => {
+  let json = JSON.parse(e.data)
+  console.log(json)
+  if (json.status == 200) {
+    switch(json.type) {
+        case 2:     // 收到单聊信息
+            handleSingleChatInfo(json)
+            break;
+        case 4:     // 创建聊天
+            break;
+        case 10:    // 收到群聊信息
+            break;
+        default:
+            break;
+    }
+  }
+  // let data = JSON.parse(decodeUnicode(e.data))
+}
+const handleSingleChatInfo = (json:any) => {
+    for (let i = 0; i < chatingList.value.length; i++) {
+        // 修改历史聊天记录
+        if (chatingList.value[i].hand == json.params.fromUser.userId) {
+            chatingList.value[i].toMsg = json.params.message
+        }
+        // 修改聊天记录
+        if (showChatingIndex.value == i && chatingList.value[i].hand === json.params.fromUser.userId) {
+            let item:MessageType = {
+                id: -1,
+                post_message:json.params.message,
+                status: 0,
+                send_time: new Date(),
+                from_user: json.params.fromUser.userId,
+                to_user: json.params.toUser.userId,
+                from_user_nickname: json.params.fromUser.nickname
+            }
+            chating.value.push(item)
+            setTimeout(() => {
+                chatContent.value.scrollTop = chatContent.value.scrollHeight
+            },1000)
+        }
+    }
+}
 </script>
 <style lang="less" scoped>
 .chat {
@@ -434,11 +533,17 @@ onMounted(async () => {
         border-top: solid 1.5px #E0E0E0;
         div {
             width: 100%;
-            height: 20%;
+            height: 23%;
+            .icon {
+                margin-top: 20px;
+                float: left;
+                margin-left: 10px;
+                cursor: pointer;
+            }
         }
         textarea {
             width: 96%;
-            height: 110px;
+            height: 100px;
             outline: none;
             border: none;
             background-color: #F3F3F3;
@@ -447,6 +552,49 @@ onMounted(async () => {
             font-size: 16px;
             resize: none;
         }
+    }
+}
+.showUserIndiv_box {
+    width: 500px;
+    height: 650px;
+    background-color: #F7F7F7;
+    border-radius: 10px;
+    .title {
+        text-align: center;
+        font-size: 25px;
+        padding-top: 30px;
+    }
+    input {
+        text-align: center;
+        outline: none;
+        width: 300px;
+        height: 35px;
+        border-radius: 6px;
+        border: solid #b3b3b3 1px;
+    }
+    span {
+        margin-left: 100px;
+        display: block;
+        padding-top: 20px;
+        padding-bottom: 10px;
+    }
+    .sex_box {
+        width: 300px;
+        height: 35px;
+        background-color: #FFF;
+        border-radius: 6px;
+        border: solid #b3b3b3 1px;
+    }
+    .userIndivConfirm {
+        width: 80px;
+        height: 35px;
+        text-align: center;
+        line-height: 35px;
+        color: #FFF;
+        background-color: #0DC160;
+        border-radius: 5px;
+        margin-top: 80px;
+        cursor: pointer;
     }
 }
 </style>

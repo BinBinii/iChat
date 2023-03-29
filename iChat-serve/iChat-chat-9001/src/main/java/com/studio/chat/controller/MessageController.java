@@ -1,10 +1,10 @@
 package com.studio.chat.controller;
 
 import com.studio.chat.service.MessagesService;
-import com.studio.common.model.pojo.TbMessages;
 import com.studio.common.model.vo.MessagesToVo;
 import com.studio.common.model.vo.MessagesVo;
 import com.studio.common.model.vo.Render;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +22,8 @@ public class MessageController {
 
     @Autowired
     private MessagesService messageService;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Secured("ROLE_USER")
     @GetMapping("history")
@@ -46,5 +48,6 @@ public class MessageController {
         }
         return Render.ok(true);
     }
+
 
 }

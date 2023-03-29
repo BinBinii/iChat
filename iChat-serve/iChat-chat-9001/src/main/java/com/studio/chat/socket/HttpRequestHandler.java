@@ -16,9 +16,12 @@ import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Sharable
@@ -30,8 +33,10 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
 	
 	private WebSocketServerHandshaker handshaker;
 
-	private HttpRequestHandler() {
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 
+	private HttpRequestHandler() {
 	}
 
 	@Override
@@ -83,6 +88,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
 			  MessageRequestPacket messageRequestPacket = new MessageRequestPacket();
 			  messageRequestPacket.setMessage(parmas.getString("message"));
 			  messageRequestPacket.setToUserId(parmas.getString("toMessageId"));
+			  messageRequestPacket.setFromUserId(parmas.getString("fromMessageId"));
+			  messageRequestPacket.setDate(new Date());
 			  messageRequestPacket.setFileType(parmas.getString("fileType"));
 			  packet = messageRequestPacket;
 			  break;

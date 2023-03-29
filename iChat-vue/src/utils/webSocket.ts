@@ -1,5 +1,5 @@
-import { fetchUserInfo } from '../api/user'
-
+import { mainStore } from '../store'
+const store = mainStore()
 let userInfo: any
 let timer: any
 
@@ -34,38 +34,33 @@ function creatWebSocket(user: any) {
 
 // 初始化websocket
 function initWebSocket() {
-  websocket = new WebSocket(wsUrl);
-  console.log("websocket:", websocket);
+  store.state.websocket = new WebSocket(wsUrl);
+  console.log("websocket:", store.state.websocket);
 
-  websocket.onopen = function (e: any) {
+  store.state.websocket.onopen = function (e: any) {
     websocketOpen(e);
     clearInterval(timer);
     timer = setInterval(function() {
-        if (websocket.readyState == WebSocket.OPEN) {
+        if (store.state.websocket.readyState == WebSocket.OPEN) {
             let data = {
                 type: 11,
                 params: {},
             }
-            websocket.send(JSON.stringify(data));
+            store.state.websocket.send(JSON.stringify(data));
         } else {
             reConnect()
         }  
-    }, 1000 * 25)
-  };
-
-  // 接收
-  websocket.onmessage = function (e: any) {
-    websocketonmessage(e);
+    }, 1000 * 15)
   };
 
   // 连接发生错误
-  websocket.onerror = function () {
+  store.state.websocket.onerror = function () {
     console.log("WebSocket连接发生错误");
     isConnect = false; // 连接断开修改标识
     reConnect(); // 连接错误 需要重连
   };
 
-  websocket.onclose = function (e: any) {
+  store.state.websocket.onclose = function (e: any) {
     websocketclose(e);
   };
 }
@@ -86,26 +81,9 @@ function websocketOpen(e: any) {
     type: 7,
     params: userInfo,
   }
-  websocket.send(JSON.stringify(data))
+  store.state.websocket.send(JSON.stringify(data))
 }
-// 数据接收
-function websocketonmessage(e: any) {
-  let json = JSON.parse(e.data)
-  console.log(json)
-  if (json.status == 200) {
-    switch(json.type) {
-        case 2:     // 收到单聊信息
-            break;
-        case 4:     // 创建聊天
-            break;
-        case 10:    // 收到群聊信息
-            break;
-        default:
-            break;
-    }
-  }
-  // let data = JSON.parse(decodeUnicode(e.data))
-}
+
 // 关闭
 function websocketclose(e: any) {
   console.log(e);
@@ -115,14 +93,14 @@ function websocketclose(e: any) {
 
 // 数据发送
 function websocketsend(data: any) {
-  websocket.send(JSON.stringify(data));
+  store.state.websocket.send(JSON.stringify(data));
 }
 
 // 实际调用的方法==============
 
 // 发送
 function sendWebSocket(data: any) {
-  if (websocket.readyState === websocket.OPEN) { // 开启状态
+  if (store.state.websocket.readyState === store.state.websocket.OPEN) { // 开启状态
     websocketsend(data);
   } else { // 若 未开启 / 正在开启 状态 ，则等待1s后重新调用
     setTimeout(function () {
@@ -135,7 +113,7 @@ function sendWebSocket(data: any) {
 
 // 关闭
 let closeWebSocket = () => {
-  websocket.close();
+  store.state.websocket.close();
 };
 
 export {

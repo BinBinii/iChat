@@ -15,6 +15,7 @@
                 </div>
             </div>
         </div>
+        
     </div>
 </template>
 <script lang="ts" setup>
@@ -22,7 +23,7 @@ import { reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { mainStore } from '../../store'
 import { register } from '../../api/user'
-import { useNotification, NotificationType } from 'naive-ui'
+import { ElNotification } from 'element-plus'
 interface FormState {
     username: String,
     password: String,
@@ -30,7 +31,6 @@ interface FormState {
 }
 const router = useRouter()
 const store = mainStore()
-const notification = useNotification()
 const formInline = reactive({
     username: '',
     password: '',
@@ -38,27 +38,33 @@ const formInline = reactive({
 })
 const handleRegister = () => {
     const { username, password, affirmPass } = formInline
-    // const params: FormState = {
-    //     username,
-    //     password,
-    //     affirmPass
-    // }
     let params = {
         username: username,
         password: password
     }
     if (password != affirmPass) {
         return false
+    } else {
+        register(params).then(res => {
+            if (res.data.code == 200) {
+                ElNotification({
+                    title: '登录成功',
+                    message: '即将跳转至登录页面..',
+                    type: 'success',
+                })
+                setTimeout(() => {
+                    router.push({name: 'login'})
+                },3000)
+            } else {
+                ElNotification({
+                    title: '登录失败',
+                    message: res.data.msg,
+                    type: 'error',
+                })
+            }
+        })
     }
-    register(params).then(res => {
-        if (res.data.code == 200) {
-            
-        } else {
-
-        }
-    })
 }
-const notify = 
 onMounted(async () => {
     
 });

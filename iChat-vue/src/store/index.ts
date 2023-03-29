@@ -19,7 +19,8 @@ export const mainStore = defineStore('main', {
         return {
             state: {
                 token: '',
-                routerChating: ''
+                routerChating: '',
+                websocket: {} as WebSocket
             }
         }
     },

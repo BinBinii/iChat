@@ -13,7 +13,9 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 /**
@@ -26,6 +28,10 @@ public class NettyServe implements InitializingBean {
 
 	@Value("${netty.port}")
 	private int nettyPort;
+
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -55,7 +61,7 @@ public class NettyServe implements InitializingBean {
 				ch.pipeline().addLast("http-chunked", new ChunkedWriteHandler()); //
 				ch.pipeline().addLast(HttpRequestHandler.INSTANCE);
 				ch.pipeline().addLast(RegisterRequestHandler.INSTANCE);
-				ch.pipeline().addLast(MessageRequestHandler.INSTANCE);
+				ch.pipeline().addLast(new MessageRequestHandler(rabbitTemplate));
 				ch.pipeline().addLast(CreateGroupRequestHandler.INSTANCE);
 				ch.pipeline().addLast(GroupMessageRequestHandler.INSTANCE);
 				ch.pipeline().addLast(HeartBeatRequestHandler.INSTANCE);
