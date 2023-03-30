@@ -45,4 +45,13 @@ public class UserServiceImpl implements UserService {
         tbUser.setPassword("");
         return tbUser;
     }
+
+    @Override
+    public boolean update(TbUser tbUser) {
+        if (tbUser.getNickname().isEmpty()) {
+            return false;
+        }
+
+        return tbUserMapper.updateById(tbUser) == 1;
+    }
 }

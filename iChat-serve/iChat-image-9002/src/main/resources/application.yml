@@ -15,8 +15,11 @@ spring:
     time-zone: GMT+8
 pic:
   dir: /root/data/images/
+#pic:
+#  dir: /Users/binbini/Documents/workspace/image-server-repo/
 rsa:
   key:
     pubKeyPath: /root/data/auth_key/id_key_rsa.pub
-
-
+#rsa:
+#  key:
+#    pubKeyPath: /Users/binbini/Documents/workspace/iChat/iChat-serve/auth_key/id_key_rsa.pub

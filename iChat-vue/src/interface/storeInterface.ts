@@ -3,7 +3,7 @@ export interface UserInfoType {
   username: String,
   password: String,
   sex: Number,
-  image: String,
+  image: any,
   nickname: String,
   status: Number
 }

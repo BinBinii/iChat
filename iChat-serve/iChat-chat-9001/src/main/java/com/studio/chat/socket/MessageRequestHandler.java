@@ -44,12 +44,7 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
 		MqMessageVo<MessageRequestPacket> mqMessageVo = new MqMessageVo<>();
 		mqMessageVo.setTitle("saveMessages")
 				.setData(messageRequestPacket);
-		try {
-			rabbitTemplate.convertAndSend(RabbitmqConfig.EXCHANGE_TOPICS_INFORM, "inform.save_messages", mqMessageVo);
-		}catch (Exception e) {
-			System.out.println(e);
-		}
-
+		rabbitTemplate.convertAndSend(RabbitmqConfig.EXCHANGE_TOPICS_INFORM, "inform.save_messages", mqMessageVo);
 		toUserChannel.writeAndFlush(new TextWebSocketFrame(buf));
 	}
 	

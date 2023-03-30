@@ -26,4 +26,11 @@ public interface UserService {
      * @return
      */
     TbUser getUserInfo(String userId);
+
+    /**
+     * 更新用户信息
+     * @param tbUser
+     * @return
+     */
+    boolean update(TbUser tbUser);
 }

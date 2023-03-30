@@ -8,7 +8,12 @@
                     <span class="window_btn" style="background-color: #FEBC2E;border: solid 1px #E09B19;"></span>
                     <span class="window_btn" style="background-color: #2BC840;border: solid 1px #1EA824;"></span>
                 </div>
-                <div class="header_icon" @click="showUserInfoPopup = !showUserInfoPopup"></div>
+                <n-avatar
+                @click="showUserInfoPopup = !showUserInfoPopup"
+                class="header_icon"
+                size="small"
+                :src="userInfo.image"/>
+                <!-- <div class="header_icon" @click="showUserInfoPopup = !showUserInfoPopup"></div> -->
                 <n-icon class="icon" size="33" color="#0DC160" :component="ChatbubbleSharp" />
                 <n-icon @click="skipContacts" class="icon" size="33" color="#766574" :component="PersonOutline" />
                 <n-icon class="icon" size="33" color="#766574" :component="Menu" />
@@ -98,9 +103,10 @@ import { mainStore } from '../../store'
 import { useRouter } from 'vue-router'
 import { ChatbubbleSharp, PersonOutline, Menu } from '@vicons/ionicons5'
 import { MoodHappy } from '@vicons/tabler'
-import { NIcon, NModal, NRadio, NRadioGroup, NUpload } from 'naive-ui'
+import { NIcon, NModal, NRadio, NRadioGroup, NUpload, NAvatar } from 'naive-ui'
 
 import UserInfoPopup  from '../../components/UserInfoPopup.vue'
+import axios from "axios"
 
 import { loginToken, fetchUserInfo } from '../../api/user'
 import { fetchMessagesHistoryList, fetchMessages } from '../../api/messages'
@@ -267,6 +273,22 @@ const handleSingleChatInfo = (json:any) => {
             },1000)
         }
     }
+}
+const getImgURLOfBase64 = async(imgUrl: String) => {
+  // 通过图片地址获取图片，从新获取图片
+  var config:any = {
+    method: 'get',
+    responseType: 'arraybuffer',
+    url: imgUrl,
+    headers: {
+        'Authorization': store.state.token
+    }
+  };
+  // 重新获取请求，获取的是base64位的图片
+  return await axios(config).then(response => {
+    return 'data:image/png;base64,' + btoa(new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+  })
+
 }
 </script>
 <style lang="less" scoped>
