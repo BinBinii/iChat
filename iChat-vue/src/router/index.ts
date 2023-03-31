@@ -16,6 +16,10 @@ const routes: RouteRecordRaw[] = [{
     path: "/contacts",
     name: "contacts",
     component: ()=>import("../views/contacts/Contacts.vue")
+  },{
+    path: "/chat/gpt",
+    name: "chatgpt",
+    component: ()=>import("../views/chatgpt/ChatGpt.vue")
   }
 ]
 

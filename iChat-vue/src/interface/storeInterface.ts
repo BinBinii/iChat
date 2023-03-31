@@ -25,3 +25,7 @@ export interface MessageType {
   to_user: String,
   from_user_nickname: String
 }
+export interface ChatGptMessageType {
+  post_mesage: String,
+  status: Number
+}

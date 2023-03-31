@@ -32,7 +32,6 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
      */
     @Override
     public void onOpen(EventSource eventSource, Response response) {
-        log.info("OpenAI建立sse连接...");
     }
 
     /**
@@ -41,9 +40,7 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
     @SneakyThrows
     @Override
     public void onEvent(EventSource eventSource, String id, String type, String data) {
-        log.info("OpenAI返回数据：{}", data);
         if (data.equals("[DONE]")) {
-            log.info("OpenAI返回数据结束了");
             sseEmitter.send(SseEmitter.event()
                     .id("[DONE]")
                     .data("[DONE]")
@@ -61,7 +58,6 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
 
     @Override
     public void onClosed(EventSource eventSource) {
-        log.info("OpenAI关闭sse连接...");
     }
 
 
