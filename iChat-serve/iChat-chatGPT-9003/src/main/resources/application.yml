@@ -1,2 +1,6 @@
 server:
   port: 9003
+open:
+  ai:
+    url: https://api.openai.com/v1/completions
+    token: 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
