@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="iChat-image-9002" />
         <module name="iChat-chat-9001" />
+        <module name="iChat-chatGPT-9003" />
         <module name="iChat-common" />
         <module name="iChat-auth-9000" />
       </profile>
