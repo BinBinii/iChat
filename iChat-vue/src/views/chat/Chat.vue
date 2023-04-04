@@ -530,6 +530,7 @@ const getImgURLOfBase64 = async(imgUrl: String) => {
                 font-size: 16px;
                 border-radius: 5px;
                 position: relative;
+                text-align: left;
             }
             .chat_triangle {
                 width: 0;

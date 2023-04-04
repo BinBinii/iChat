@@ -26,20 +26,6 @@ public class UserServiceImpl implements UserService {
     private TbFriendMapper tbFriendMapper;
 
     @Override
-    public List<TbUser> getFriendListData(String userId) {
-        QueryWrapper<TbFriend> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
-        List<TbFriend> tbFriendList = tbFriendMapper.selectList(queryWrapper);
-        List<TbUser> tbUsers = new ArrayList<>();
-        for (TbFriend tbFriend:tbFriendList) {
-            TbUser tbUser = tbUserMapper.selectById(tbFriend.getFriend_id());
-            tbUser.setPassword("");
-            tbUsers.add(tbUser);
-        }
-        return tbUsers;
-    }
-
-    @Override
     public TbUser getUserInfo(String userId) {
         TbUser tbUser = tbUserMapper.selectById(userId);
         tbUser.setPassword("");

@@ -14,13 +14,6 @@ import java.util.List;
 public interface UserService {
 
     /**
-     * 获取好友列表
-     * @param userId
-     * @return
-     */
-    List<TbUser> getFriendListData(String userId);
-
-    /**
      * 获取用户信息
      * @param userId
      * @return

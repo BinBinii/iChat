@@ -29,3 +29,14 @@ export interface ChatGptMessageType {
   post_mesage: String,
   status: Number
 }
+export interface FriendReqType {
+  req: String,
+  hand: String,
+  status: Number,
+  create_time: Date,
+  pass_time: Date,
+  username: String,
+  sex: Number,
+  image: String,
+  nickname: String,
+}

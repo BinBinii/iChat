@@ -31,17 +31,18 @@
                         <n-icon v-if="!showNewUserListFlag" class="icon" size="25" color="#B5B5B5" :component="ChevronForward" />
                         <n-icon v-else class="icon" size="25" color="#B5B5B5" :component="ChevronDown" />
                         <span class="item_title_content">新的朋友</span>
-                        <span class="item_title_number">1</span>
+                        <span class="item_title_number">{{ friendReqList.length }}</span>
                     </div>
                     <div class="new_mail_box">
-                        <template v-for="item in 1" v-if="showNewUserListFlag">
+                        <template v-for="item in friendReqList" v-if="showNewUserListFlag">
                             <div class="new_mail_item">
                                 <div class="icon"></div>
                                 <div class="content">
-                                    <p>用户昵称</p>
+                                    <p>{{ item.nickname }}</p>
                                     <p>添加好友描述</p>
                                 </div>
-                                <span>未通过</span>
+                                <span v-if="item.req == userInfo.userId">{{ item.status == 1 ? '已通过':'未通过' }}</span>
+                                <span v-if="item.hand == userInfo.userId" class="pass-btn">同意</span>
                             </div>
                         </template>
                     </div>
@@ -101,17 +102,18 @@
 import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { mainStore } from '../../store'
-import { fetchFriendList } from '../../api/friend'
+import { fetchFriendList, fetchFriendReqList } from '../../api/friend'
 import { loginToken, fetchUserInfo } from '../../api/user'
 import { ChatbubbleOutline, Person, Menu, PersonCircle, ChevronForward, ChevronDown } from '@vicons/ionicons5'
 import { NIcon, NAvatar } from 'naive-ui'
-import { UserInfoType } from '../../interface/storeInterface'
+import { UserInfoType, FriendReqType } from '../../interface/storeInterface'
 
 const store = mainStore()
 const router = useRouter()
 const searchInput = ref('')
 const userInfo = ref({} as UserInfoType)
 const friendList = ref([] as UserInfoType[])
+const friendReqList = ref([] as FriendReqType[])
 const showNewUserListFlag = ref(false)
 const showUserListFlag = ref(false)
 const showUserInfoFlag = ref(false)
@@ -146,6 +148,14 @@ const getFriendList = () => {
         friendList.value = res.data.data
     })
 }
+const getfriendReqList = () => {
+    let params = {
+        userId: userInfo.value.userId
+    }
+    fetchFriendReqList(params).then(res => {
+        friendReqList.value = res.data.data
+    })
+}
 const goChating = () => {
     store.state.routerChating = showUserInfoData.value.userId.toString()
     skipChat()
@@ -154,6 +164,7 @@ onMounted(async () => {
     loginToken().then(res => {
         userInfo.value = res.data.data
         getFriendList()
+        getfriendReqList()
     })
 });
 </script>
@@ -350,6 +361,14 @@ onMounted(async () => {
                 right: 15px;
                 top: 15px;
                 color: #ACACAC;
+            }
+            .pass-btn {
+                display: block;
+                background-color: #0DC160;
+                color: #FFF;
+                padding: 3px 10px;
+                border-radius: 3px;
+                cursor: pointer;
             }
         }
     }

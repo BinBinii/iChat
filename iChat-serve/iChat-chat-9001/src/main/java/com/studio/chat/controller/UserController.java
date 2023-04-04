@@ -22,12 +22,6 @@ public class UserController {
     private UserService userService;
 
     @Secured("ROLE_USER")
-    @GetMapping("friend/list")
-    public Object getFriendListData(@RequestParam("userId") String userId) {
-        List<TbUser> result = userService.getFriendListData(userId);
-        return Render.ok(result);
-    }
-    @Secured("ROLE_USER")
     @GetMapping("get/info")
     public Object getUserInfo(@RequestParam("userId") String userId) {
         TbUser result = userService.getUserInfo(userId);

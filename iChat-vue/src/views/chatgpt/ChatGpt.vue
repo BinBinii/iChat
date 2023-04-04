@@ -287,6 +287,7 @@ const mdToHtml = (content:String) => {
                 border-radius: 5px;
                 position: relative;
                 max-width: 400px;
+                text-align: left;
             }
             .chat_triangle {
                 width: 0;
