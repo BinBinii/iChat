@@ -1,6 +1,7 @@
 package com.studio.chat.controller;
 
 import com.studio.chat.service.MessagesService;
+import com.studio.common.model.vo.DataTablesResult;
 import com.studio.common.model.vo.MessagesToVo;
 import com.studio.common.model.vo.MessagesVo;
 import com.studio.common.model.vo.Render;
@@ -34,8 +35,17 @@ public class MessageController {
 
     @Secured("ROLE_USER")
     @GetMapping("list")
-    public Object getMessagesList(@RequestParam("userId") String userId, @RequestParam("hand") String hand) {
-        List<MessagesVo> result = messageService.getMessages(userId, hand);
+    public Object getMessagesList(@RequestParam("userId") String userId,
+                                  @RequestParam("hand") String hand,
+                                  @RequestParam("start") Integer start) {
+        DataTablesResult result = messageService.getMessages(userId, hand, start);
+        return result;
+    }
+
+    @Secured("ROLE_USER")
+    @PostMapping("read")
+    public Object readMessages(@RequestParam("ids") Integer[] ids) {
+        boolean result = messageService.readMessages(ids);
         return Render.ok(result);
     }
 

@@ -1,6 +1,0 @@
-server:
-  port: 9003
-open:
-  ai:
-    url: https://api.openai.com/
-    token: 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

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/iChat-auth-resource-9005.iml" filepath="$PROJECT_DIR$/iChat-auth-resource-9005.iml" />
+      <module fileurl="file://$PROJECT_DIR$/iChat-auth-server-9004.iml" filepath="$PROJECT_DIR$/iChat-auth-server-9004.iml" />
+    </modules>
+  </component>
+</project>

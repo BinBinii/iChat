@@ -34,8 +34,8 @@
                         <span class="item_title_number">{{ friendReqList.length }}</span>
                     </div>
                     <div class="new_mail_box">
-                        <template v-for="item in friendReqList" v-if="showNewUserListFlag">
-                            <div class="new_mail_item">
+                        <template v-for="(item,index) in friendReqList" v-if="showNewUserListFlag">
+                            <div class="new_mail_item"  :style="showNewUserInfoIndex == index ? 'background-color: #DEDEDE':''" @click="handleNewUserInfo(index)">
                                 <div class="icon"></div>
                                 <div class="content">
                                     <p>{{ item.nickname }}</p>
@@ -50,16 +50,19 @@
                         <n-icon v-if="!showUserListFlag" class="icon" size="25" color="#B5B5B5" :component="ChevronForward" />
                         <n-icon v-else class="icon" size="25" color="#B5B5B5" :component="ChevronDown" />
                         <span class="item_title_content">通讯录</span>
-                        <span class="item_title_number">{{ friendList.length }}</span>
+                        <span class="item_title_number">{{ friendTotal }}</span>
                     </div>
                     <div class="mail_box">
-                        <template v-for="(item,index) in friendList" v-if="showUserListFlag">
-                            <div class="new_mail_item" :style="showUserInfoIndex == index ? 'background-color: #DEDEDE':''" @click="handleUserInfo(item.userId, index)">
-                                <div class="icon"></div>
-                                <div class="content">
-                                    <p>{{item.nickname}}</p>
+                        <template v-for="item in friendList" v-if="showUserListFlag">
+                            <div class="friendTitle"><span>{{ item.title }}</span></div>
+                            <template v-for="friend in item.list">
+                                <div class="new_mail_item" :style="showUserInfoIndex == friend.userId ? 'background-color: #DEDEDE':''" @click="handleUserInfo(friend.userId)">
+                                    <div class="icon"></div>
+                                    <div class="content">
+                                        <p>{{friend.nickname}}</p>
+                                    </div>
                                 </div>
-                            </div>
+                            </template>
                         </template>
                     </div>
                 </div>
@@ -94,6 +97,36 @@
                         </div>
                     </div>
                 </div>
+                <div class="bg" v-if="showNewUserInfoFlag">
+                    <div class="user_info_box">
+                        <div class="user_info_box_1">
+                            <div class="content">
+                                <span>{{ showNewUserInfoData.nickname }}</span>
+                            </div>
+                            <div class="icon"></div>
+                        </div>
+                        <div class="user_info_box_2">
+                            <div class="prop">
+                                <p>备注名</p>
+                                <p>地区</p>
+                                <p>iChat号</p>
+                                <p>来源</p>
+                                <p>朋友权限</p>
+                            </div>
+                            <div class="content">
+                                <p>备注名</p>
+                                <p>用户所在地区</p>
+                                <p>{{ showNewUserInfoData.username }}</p>
+                                <p>添加好友来源</p>
+                                <p style="color: #CCC">该功能尚未开通</p>
+                            </div>
+                        </div>
+                        <div class="user_info_box_3">
+                            <div v-if="showNewUserInfoData.status == 1" class="message" @click="goChating">发消息</div>
+                            <div v-if="showNewUserInfoData.status == 0" class="message">同意</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -106,20 +139,28 @@ import { fetchFriendList, fetchFriendReqList } from '../../api/friend'
 import { loginToken, fetchUserInfo } from '../../api/user'
 import { ChatbubbleOutline, Person, Menu, PersonCircle, ChevronForward, ChevronDown } from '@vicons/ionicons5'
 import { NIcon, NAvatar } from 'naive-ui'
-import { UserInfoType, FriendReqType } from '../../interface/storeInterface'
+import { UserInfoType, FriendReqType, FriendListType} from '../../interface/storeInterface'
+import { pinyin } from 'pinyin-pro'
 
 const store = mainStore()
 const router = useRouter()
 const searchInput = ref('')
 const userInfo = ref({} as UserInfoType)
-const friendList = ref([] as UserInfoType[])
+const friendList = ref([] as FriendListType[])
+const friendTotal = ref(0)
 const friendReqList = ref([] as FriendReqType[])
 const showNewUserListFlag = ref(false)
+const showNewUserInfoFlag = ref(false)
+const showNewUserInfoData = ref({} as FriendReqType)
+const showNewUserInfoIndex = ref()
+
 const showUserListFlag = ref(false)
 const showUserInfoFlag = ref(false)
 const showUserInfoData = ref({} as UserInfoType)
-const showUserInfoIndex = ref()
+const showUserInfoIndex = ref('' as String)
 const showUserInfoPopup = ref(false)
+
+
 
 const skipChat = () => {
     router.push({name: 'chat'})
@@ -130,9 +171,11 @@ const handleNewUserList = () => {
 const handleUserList = () => {
     showUserListFlag.value = !showUserListFlag.value
 }
-const handleUserInfo = (userId: String, index:Number) => {
+const handleUserInfo = (userId: String) => {
+    showNewUserInfoFlag.value = false
+    showNewUserInfoIndex.value = -1
     showUserInfoFlag.value = true
-    showUserInfoIndex.value = index
+    showUserInfoIndex.value = userId
     let params = {
         userId: userId
     }
@@ -140,12 +183,55 @@ const handleUserInfo = (userId: String, index:Number) => {
         showUserInfoData.value = res.data.data
     })
 }
+const handleNewUserInfo = (index:any) => {
+    showUserInfoFlag.value = false
+    showUserInfoIndex.value = ''
+    showNewUserInfoFlag.value = true
+    showNewUserInfoIndex.value = index
+
+    showNewUserInfoData.value = friendReqList.value[index]
+}
 const getFriendList = () => {
     let params = {
         userId: userInfo.value.userId
     }
     fetchFriendList(params).then(res => {
-        friendList.value = res.data.data
+        friendTotal.value = res.data.data.length
+        for (let friend of res.data.data) {
+            let initial = toPinyin(friend.nickname).substring(0,1).toUpperCase()
+            if (friendList.value.length === 0) {
+                let friendItem:FriendListType = {
+                    title: initial,
+                    list: [friend]
+                }
+                friendList.value.push(friendItem)
+            } else {
+                let newFlag = true
+                for (let item of friendList.value) {
+                    if (item.title == initial) {
+                        newFlag = false
+                        item.list.push(friend)
+                        break
+                    }
+                }
+                if (newFlag) {
+                    let friendItem:FriendListType = {
+                        title: initial,
+                        list: [friend]
+                    }
+                    friendList.value.push(friendItem)
+                }
+            }   
+        }
+        friendList.value.sort((n1,n2)=> {
+            if (n1.title < n2.title) {
+                return -1
+            }
+            if (n1.title > n2.title) {
+                return 1
+            }
+            return 0
+        })
     })
 }
 const getfriendReqList = () => {
@@ -159,6 +245,9 @@ const getfriendReqList = () => {
 const goChating = () => {
     store.state.routerChating = showUserInfoData.value.userId.toString()
     skipChat()
+}
+const toPinyin = (text: any) => {
+    return pinyin(text, { toneType: 'none' })
 }
 onMounted(async () => {
     loginToken().then(res => {
@@ -376,6 +465,18 @@ onMounted(async () => {
         width: 100%;
         overflow: hidden;
         margin: 0 auto;
+        .friendTitle {
+            text-align: left;
+            color: #ADADAD;
+            margin-left: 40px;
+            height: 35px;
+            margin-right: 10px;
+            font-size: 15px;
+            border-bottom: solid 1.5px #EBEBEB;
+            span {
+                margin-left: 3px;
+            }
+        }
         .new_mail_item {
             width: 100%;
             height: 80px;

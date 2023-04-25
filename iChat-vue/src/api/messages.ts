@@ -14,3 +14,10 @@ export function fetchMessages(query: object) {
         params: query
     })
 }
+export function readMessages(data: object) {
+    return request({
+        url: '/msg/read',
+        method: 'post',
+        data
+    })
+}

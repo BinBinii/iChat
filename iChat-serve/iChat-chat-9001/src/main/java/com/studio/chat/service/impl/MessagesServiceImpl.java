@@ -1,11 +1,16 @@
 package com.studio.chat.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.studio.chat.mapper.*;
 import com.studio.chat.service.MessagesService;
 import com.studio.common.model.pojo.TbGroupMessages;
 import com.studio.common.model.pojo.TbMessages;
 import com.studio.common.model.pojo.TbMessagesTo;
+import com.studio.common.model.vo.DataTablesResult;
 import com.studio.common.model.vo.MessagesToVo;
 import com.studio.common.model.vo.MessagesVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +73,6 @@ public class MessagesServiceImpl implements MessagesService {
                     messagesToVo.setNickname(tbGroupMapper.selectById(tbGroupMessages.get(0).getGroup_id()).getName())
                             .setToMsg(tbGroupMessages.get(0).getText())
                             .setSendTime(tbGroupMessages.get(0).getCreate_time());
-
                 }
                 messagesToVos.add(messagesToVo);
             }
@@ -77,13 +81,18 @@ public class MessagesServiceImpl implements MessagesService {
     }
 
     @Override
-    public List<MessagesVo> getMessages(String userId, String hand) {
-        QueryWrapper<TbMessages> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("from_user", userId).eq("to_user", hand)
-                .or().eq("from_user", hand).eq("to_user", userId).orderByAsc("send_time");
-        List<TbMessages> tbMessagesList = tbMessagesMapper.selectList(queryWrapper);
+    public DataTablesResult getMessages(String userId, String hand, Integer start) {
+        DataTablesResult result = new DataTablesResult();
+        LambdaQueryWrapper<TbMessages> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.eq(TbMessages::getFrom_user, userId).eq(TbMessages::getTo_user, hand)
+                        .or()
+                        .eq(TbMessages::getFrom_user, hand).eq(TbMessages::getTo_user, userId)
+                        .orderByDesc(TbMessages::getSend_time);
+        Page<TbMessages> page = new Page<>(start,25);
+        IPage<TbMessages> iPage = tbMessagesMapper.selectPage(page, lambdaQueryWrapper);
         List<MessagesVo> messagesVos = new ArrayList<>();
-        for (TbMessages tbMessages:tbMessagesList) {
+        for (int i = iPage.getRecords().size() - 1; i >= 0; i--) {
+            TbMessages tbMessages = iPage.getRecords().get(i);
             MessagesVo messagesVo = new MessagesVo();
             messagesVo.setId(tbMessages.getId())
                     .setPost_message(tbMessages.getPost_message())
@@ -94,7 +103,20 @@ public class MessagesServiceImpl implements MessagesService {
                     .setFrom_user_nickname(tbUserMapper.selectById(tbMessages.getFrom_user()).getNickname());
             messagesVos.add(messagesVo);
         }
-        return messagesVos;
+        result.setPages(iPage.getPages())
+                .setCurrent(iPage.getCurrent())
+                .setData(messagesVos);
+        return result;
+    }
+
+    @Override
+    public boolean readMessages(Integer[] ids) {
+        for (Integer id:ids) {
+            TbMessages tbMessages = tbMessagesMapper.selectById(id);
+            tbMessages.setStatus(1);
+            tbMessagesMapper.updateById(tbMessages);
+        }
+        return true;
     }
 
     @Override

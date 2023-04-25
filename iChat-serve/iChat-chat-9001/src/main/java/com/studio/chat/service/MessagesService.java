@@ -2,6 +2,7 @@ package com.studio.chat.service;
 
 import com.studio.common.model.pojo.TbMessages;
 import com.studio.common.model.pojo.TbMessagesTo;
+import com.studio.common.model.vo.DataTablesResult;
 import com.studio.common.model.vo.MessagesToVo;
 import com.studio.common.model.vo.MessagesVo;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,17 @@ public interface MessagesService {
      * 获取聊天
      * @param fromUser
      * @param toUser
+     * @param start
      * @return
      */
-    List<MessagesVo> getMessages(String fromUser, String toUser);
+    DataTablesResult getMessages(String fromUser, String toUser, Integer start);
+
+    /**
+     * 已读消息
+     * @param ids
+     * @return
+     */
+    boolean readMessages(Integer[] ids);
 
     /**
      * 新建聊天记录
@@ -38,5 +47,6 @@ public interface MessagesService {
      * @return
      */
     boolean newMessagesTo(String userId, String hand, Integer status);
+
 
 }

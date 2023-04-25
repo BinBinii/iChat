@@ -22,7 +22,7 @@
             <div class="chat_item_middle">
                 <div class="search_box">
                     <input class="search" v-model="searchInput" placeholder="搜索">
-                    <div class="add_person"><span>+</span></div>
+                    <div class="add_person" @click="showCreateGroup"><span>+</span></div>
                 </div>
                 <div class="chat_records_box">
                     <template v-for="(item,index) in chatingList">
@@ -42,8 +42,28 @@
                     <div class="chat_personal_title">
                         <span>{{ chatingTitle }}</span>
                     </div>
-                    <div class="chat_content" ref="chatContent">
+                    <div class="chat_content" ref="chatContent" @scroll="handleChatScroll">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="32px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;margin-top: 10px;" xml:space="preserve" v-if="showLoading">
+                                <rect x="0" y="7.6416" width="4" height="14.7168" fill="#666" opacity="0.2">
+                                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                                </rect>
+                                <rect x="8" y="5.1416" width="4" height="19.7168" fill="#666" opacity="0.2">
+                                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                                </rect>
+                                <rect x="16" y="7.3584" width="4" height="15.2832" fill="#666" opacity="0.2">
+                                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </svg>
+                        </div>
                         <template v-for="item in chating">
+                            <p v-if="item.timer_show" class="time_stamp">{{ formatDateMin(item.send_time) }}</p>
                             <div class="user_box" v-if="item.from_user === userInfo.userId">
                                 <div class="icon"></div>
                                 <div>
@@ -73,6 +93,45 @@
                     </div>
                 </div>
             </div>
+            <div class="create_group_mask" v-if="showCreateGroupPopup">
+                <div class="create_group_box">
+                    <div class="left">
+                        <input class="search" v-model="searchInput" placeholder="搜索">
+                        <div style="clear: both;overflow: auto;height: 90%;">
+                            <template v-for="item in friendList">
+                                <p class="title">{{ item.title }}</p>
+                                <template v-for="friend in item.list">
+                                    <div :style="chooseCreateGroupFriendIndex == friend.userId?'background-color: #DEDEDE':''" class="friend_item" @click="createGroupchooseFriendItem(friend)">
+                                        <n-checkbox size="large" class="checkbox" v-model:checked="friend.checked" />
+                                        <div class="icon"></div>
+                                        <p class="nickname">{{ friend.nickname }}</p>
+                                    </div>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="right_item1">
+                            <span>发起群聊</span>
+                            <span v-if="chooseFriendList.length == 0">未选择联系人</span>
+                            <span v-else>已选择{{chooseFriendList.length}}个联系人</span>
+                        </div>
+                        <div class="right_item2">
+                            <div class="friend_item" v-for="friend in chooseFriendList">
+                                <div class="icon"></div>
+                                <span class="nickname">{{ friend.nickname }}</span>
+                                <div class="close">
+                                    <n-icon style="margin-top: 3px;" size="14" color="#FFF" :component="Close" @click="deleteChooseFriend(friend)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right_item3">
+                            <div class="close" @click="showCreateGroupPopup = false">取消</div>
+                            <div class="create">创建</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <n-modal v-if="userInfo.nickname==''" v-model:show="showUserIndividualizationModal" transform-origin="center">
             <div class="showUserIndiv_box">
@@ -99,20 +158,23 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, onMounted, Component } from 'vue'
+import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { mainStore } from '../../store'
 import { useRouter } from 'vue-router'
-import { ChatbubbleSharp, PersonOutline, Menu } from '@vicons/ionicons5'
+import { ChatbubbleSharp, PersonOutline, Menu, Close } from '@vicons/ionicons5'
 import { MoodHappy } from '@vicons/tabler'
-import { NIcon, NModal, NRadio, NRadioGroup, NUpload, NAvatar } from 'naive-ui'
+import { NIcon, NModal, NRadio, NRadioGroup, NUpload, NAvatar, NCheckbox } from 'naive-ui'
 
 import UserInfoPopup  from '../../components/UserInfoPopup.vue'
 import axios from "axios"
 
 import { loginToken, fetchUserInfo } from '../../api/user'
-import { fetchMessagesHistoryList, fetchMessages } from '../../api/messages'
-import { UserInfoType, MessageToType, MessageType } from '../../interface/storeInterface'
+import { fetchMessagesHistoryList, fetchMessages, readMessages } from '../../api/messages'
+import { fetchFriendList } from '../../api/friend'
+import { UserInfoType, MessageToType, MessageType, PageInfo, CreateGroupFriendListType, CreateGroupFriend } from '../../interface/storeInterface'
 import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSocket'
+import { pinyin } from 'pinyin-pro'
+
 const store = mainStore()
 const router = useRouter()
 const searchInput = ref('')
@@ -122,11 +184,19 @@ const userInfo = ref({} as UserInfoType)
 const showChat = ref(false)
 const chatingList = ref([] as MessageToType[])
 const chating = ref([] as MessageType[])
+const unReadMsgArr = ref([] as Number[])
+const pageInfo = ref({} as PageInfo)
+// const chating = ref({} as DataTablesResult)
 const chatingTitle = ref('' as String)
 const selectHand = ref('' as String)
 const showChatingIndex = ref(-1 as any)
 const showUserIndividualizationModal = ref(true)
 const showUserInfoPopup = ref(false)
+const showLoading = ref(false)
+const showCreateGroupPopup = ref(false)
+const chooseCreateGroupFriendIndex = ref('' as String)
+const friendList = ref([] as CreateGroupFriendListType[])
+const chooseFriendList = ref([] as CreateGroupFriend[])
 
 const chatContent = ref()
 
@@ -149,17 +219,70 @@ const getMessagesHistoryList = () => {
         }
     })
 }
-const getMessages = (userId: String, hand: String) => {
+const getMessages = (userId: String, hand: String, start: Number) => {
     let params = {
         userId: userId,
-        hand: hand
+        hand: hand,
+        start: start
     }
     fetchMessages(params).then(res => {
-        chating.value = res.data.data
-        setTimeout(() => {
-            chatContent.value.scrollTop = chatContent.value.scrollHeight
-        },10)
+        showLoading.value = false
+        pageInfo.value.pages = res.data.pages
+        pageInfo.value.current = res.data.current
+        let notesHeight = 0, timer
+        if (chating.value.length == 0) {
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (res.data.data[i].status == 0) {  // 未读消息
+                    unReadMsgArr.value.push(res.data.data[i].id)
+                }
+                if (timer == null) {
+                    timer = res.data.data[0].send_time
+                    res.data.data[0].timer_show = true
+                }
+                let timeStamp = (+new Date(res.data.data[i].send_time) - +new Date(timer)) / 1000
+                if (timeStamp > 300) {
+                    res.data.data[i].timer_show = true
+                    timer = res.data.data[i].send_time
+                } else {
+                    res.data.data[i].timer_show = false
+                }
+            }
+            chating.value = res.data.data
+            setTimeout(() => {
+                chatContent.value.scrollTop = chatContent.value.scrollHeight
+            },10)
+        } else {
+            let arr:MessageType[] = res.data.data
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].status == 0) {  // 未读信息
+                    unReadMsgArr.value.push(arr[i].id)
+                }
+                if (timer == null) {
+                    timer = arr[0].send_time
+                    arr[0].timer_show = true
+                }
+                let timeStamp = (+new Date(arr[i].send_time) - +new Date(timer)) / 1000
+                if (timeStamp > 300) {
+                    arr[i].timer_show = true
+                    timer = arr[i].send_time
+                } else {
+                    arr[i].timer_show = false
+                }
+            }
+            let newArr = arr.concat(chating.value)
+            chating.value = newArr
+            setTimeout(() => {
+                chatContent.value.scrollTop = chatContent.value.scrollHeight - notesHeight
+            },10)
+        }
+        notesHeight = chatContent.value.scrollHeight
+        let data = {
+            ids: unReadMsgArr.value
+        }
+        readMessages(data).then(res => {
+        })
     })
+    
 }
 const getUserInfo = (userId: String) => {
     let params = {
@@ -176,7 +299,8 @@ const handleChat = (userId: String, hand: String, nickname: String, index: Numbe
     showChatingIndex.value = index
     showChat.value = true
     chatingTitle.value = nickname
-    getMessages(userId, hand)
+    chating.value = []
+    getMessages(userId, hand, 1)
 }
 const sendMessage = () => {
     let data = {
@@ -195,7 +319,8 @@ const sendMessage = () => {
         send_time: new Date(),
         from_user: data.params.fromMessageId,
         to_user: data.params.toMessageId,
-        from_user_nickname: userInfo.value.nickname
+        from_user_nickname: userInfo.value.nickname,
+        timer_show: false
     }
     chating.value.push(item)
     message.value = ''
@@ -223,6 +348,17 @@ const formatDate = (time:Date) => {
         return times.getFullYear() + '/' + (times.getMonth() < 10 ? '0' + times.getMonth() : times.getMonth()) + '/' + (times.getDay() < 10 ? '0' + times.getDay() : times.getDay())
     }
 }
+const formatDateMin = (time:Date) => {
+    let times = new Date(time)
+    if (time == null) {
+        return ''
+    }
+    if (times.toDateString() === new Date().toDateString()) {
+        return (times.getHours() < 10 ? '0' + times.getHours() : times.getHours()) + ':' + (times.getMinutes() < 10 ? '0' + times.getMinutes() : times.getMinutes())
+    } else {
+        return times.getFullYear() + '年' + (times.getMonth() < 10 ? '0' + times.getMonth() : times.getMonth()) + '月' + (times.getDay() < 10 ? '0' + times.getDay() : times.getDay()) + '日 ' + (times.getHours() < 10 ? '0' + times.getHours() : times.getHours()) + ':' + (times.getMinutes() < 10 ? '0' + times.getMinutes() : times.getMinutes())
+    }
+}
 onMounted(async () => {
     loginToken().then(res => {
         userInfo.value = res.data.data
@@ -233,6 +369,9 @@ onMounted(async () => {
         };
     })
 });
+onUnmounted(async () => {
+    closeWebSocket()
+})
 const websocketonmessage = (e: any) => {
   let json = JSON.parse(e.data)
   console.log(json)
@@ -266,12 +405,93 @@ const handleSingleChatInfo = (json:any) => {
                 send_time: new Date(),
                 from_user: json.params.fromUser.userId,
                 to_user: json.params.toUser.userId,
-                from_user_nickname: json.params.fromUser.nickname
+                from_user_nickname: json.params.fromUser.nickname,
+                timer_show: false,
             }
             chating.value.push(item)
             setTimeout(() => {
                 chatContent.value.scrollTop = chatContent.value.scrollHeight
             },1000)
+        }
+    }
+}
+const handleChatScroll = () => {
+    if (chatContent.value.scrollTop == 0) {
+        if (pageInfo.value.current < pageInfo.value.pages) {
+            showLoading.value = true
+            let nextCurrent = Number(pageInfo.value.current) + 1
+            getMessages(userInfo.value.userId, selectHand.value, nextCurrent)
+        }
+        
+    }
+}
+const showCreateGroup = () => {
+    friendList.value = []
+    chooseFriendList.value = []
+    showCreateGroupPopup.value = !showCreateGroupPopup.value
+    let params = {
+        userId: userInfo.value.userId
+    }
+    fetchFriendList(params).then(res => {
+        for (let friend of res.data.data) {
+            friend.checked = false
+            let initial = toPinyin(friend.nickname).substring(0,1).toUpperCase()
+            if (friendList.value.length === 0) {
+                let friendItem:CreateGroupFriendListType = {
+                    title: initial,
+                    list: [friend]
+                }
+                friendList.value.push(friendItem)
+            } else {
+                let newFlag = true
+                for (let item of friendList.value) {
+                    if (item.title == initial) {
+                        newFlag = false
+                        item.list.push(friend)
+                        break
+                    }
+                }
+                if (newFlag) {
+                    let friendItem:CreateGroupFriendListType = {
+                        title: initial,
+                        list: [friend]
+                    }
+                    friendList.value.push(friendItem)
+                }
+            }   
+        }
+        friendList.value.sort((n1,n2)=> {
+            if (n1.title < n2.title) {
+                return -1
+            }
+            if (n1.title > n2.title) {
+                return 1
+            }
+            return 0
+        })
+        console.log(friendList.value)
+    })
+}
+const createGroupchooseFriendItem = (friend: CreateGroupFriend) => {
+    friend.checked = !friend.checked
+    chooseCreateGroupFriendIndex.value = friend.userId
+    chooseFriendList.value = []
+    for (let i = 0; i < friendList.value.length; i++) {
+        for (let j = 0; j < friendList.value[i].list.length; j++) {
+            if (friendList.value[i].list[j].checked) {
+                chooseFriendList.value.push(friendList.value[i].list[j])
+            }
+        }
+    }
+}
+const deleteChooseFriend = (friend: CreateGroupFriend) => {
+    friend.checked = false
+    chooseFriendList.value = []
+    for (let i = 0; i < friendList.value.length; i++) {
+        for (let j = 0; j < friendList.value[i].list.length; j++) {
+            if (friendList.value[i].list[j].checked) {
+                chooseFriendList.value.push(friendList.value[i].list[j])
+            }
         }
     }
 }
@@ -289,7 +509,9 @@ const getImgURLOfBase64 = async(imgUrl: String) => {
   return await axios(config).then(response => {
     return 'data:image/png;base64,' + btoa(new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''));
   })
-
+}
+const toPinyin = (text: any) => {
+    return pinyin(text, { toneType: 'none' })
 }
 </script>
 <style lang="less" scoped>
@@ -377,6 +599,7 @@ const getImgURLOfBase64 = async(imgUrl: String) => {
 }
 .search:focus {
     border: solid 1.5px #0DC160;
+    background-color: #FFF;
 }
 .add_person {
     width: 25px;
@@ -469,6 +692,10 @@ const getImgURLOfBase64 = async(imgUrl: String) => {
         width: 100%;
         height: 580px;
         overflow: auto;
+        .time_stamp {
+            color: #AAAAAA;
+            letter-spacing: 0.2px;
+        }
         .hand_box {
             padding-top: 20px;
             padding-bottom: 10px;
@@ -619,6 +846,166 @@ const getImgURLOfBase64 = async(imgUrl: String) => {
         border-radius: 5px;
         margin-top: 80px;
         cursor: pointer;
+    }
+}
+.create_group_mask {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(120, 120, 120, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    .create_group_box {
+        position: relative;
+        width: 750px;
+        height: 550px;
+        background-color: #FFF;
+        top: 150px;
+        left: 230px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+        overflow: hidden;
+        color: #191919;
+        .left {
+            float: left;
+            width: 44.8%;
+            height: 100%;
+            background-color: #F7F7F7;
+            border-right: solid 1.5px #EBEBEB;
+            .search {
+                width: 260px;
+            }
+            .title {
+                text-align: left;
+                color: #7B7B7B;
+                font-size: 16px;
+                margin-left: 20px;
+                line-height: 0px;
+                margin-top: 30px;
+            }
+            .friend_item {
+                height: 40px;
+                clear: both;
+                padding: 15px 0px;
+                cursor: pointer;
+                .checkbox {
+                    float: left;
+                    margin-top: 8px;
+                    margin-left: 20px;
+                    margin-right: 15px;
+                    .n-checkbox-box__border {
+                    border: #333;
+                }
+                }
+                .icon {
+                    float: left;
+                    width: 40px;
+                    height: 40px;
+                    background-color: #666;
+                    border-radius: 3px;
+                }
+                .nickname {
+                    float: left;
+                    font-size: 16px;
+                    color: #181818;
+                    -webkit-text-stroke: 0.1px #181818;
+                    margin-left: 15px;
+                    margin-top: 7px;
+                }
+            }
+        }
+        .right {
+            float: right;
+            width: 55%;
+            height: 100%;
+            background-color: #FFF;
+            padding-top: 20px;
+            
+            .right_item1 {
+                width: 100%;
+                height: 20px;
+                span:nth-child(1) {
+                    font-size: 18px;
+                    -webkit-text-stroke: 0.2px #191919;
+                    float: left;
+                    margin-left: 40px;
+                }
+                span:nth-child(2) {
+                    color: #B2B2B2;
+                    float: right;
+                    margin-top: 5px;
+                    margin-right: 40px;
+                }
+            }
+            .right_item2 {
+                margin-left: 5%;
+                width: 330px;
+                height: 415px;
+                margin-top: 5px;
+                overflow-y: auto;
+                padding-left: 20px;
+                padding-right: 20px;
+                padding-top: 20px;
+                .friend_item {
+                    width: 90px;
+                    height: 90px;
+                    text-align: center;
+                    float: left;
+                    margin-left: 10px;
+                    margin-bottom: 5px;
+                    position: relative;
+                    .icon {
+                        width: 55px;
+                        height: 55px;
+                        background-color: #666;
+                        margin: 0 auto;
+                        border-radius: 3px;
+                    }
+                    .nickname {
+                        color: #191919;
+                        -webkit-text-stroke: 0.2px #191919;
+                    }
+                    .close {
+                        position: absolute;
+                        top: -8px;
+                        right: 10px;
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 20px;
+                        background-color: #808080;
+                    }
+                }
+            }
+            .right_item3 {
+                width: 100%;
+                .close {
+                    float: left;
+                    width: 130px;
+                    height: 35px;
+                    line-height: 35px;
+                    font-size: 18px;
+                    background-color: #F2F2F2;
+                    color: #0DC160;
+                    -webkit-text-stroke: 0.2px #0DC160;
+                    border-radius: 5px;
+                    margin-left: 68px;
+                    cursor: pointer;
+                }
+                .create {
+                    float: right;
+                    width: 130px;
+                    height: 35px;
+                    line-height: 35px;
+                    font-size: 18px;
+                    background-color: #0DC160;
+                    color: #FFF;
+                    -webkit-text-stroke: 0.2px #FFF;
+                    border-radius: 5px;
+                    margin-right: 68px;
+                    cursor: pointer;
+                }
+            }
+        }
     }
 }
 </style>

@@ -27,6 +27,7 @@ public class RegisterRequestHandler extends SimpleChannelInboundHandler<Register
 		if (SessionUtils.hasLogin(ctx.channel())) {
 			System.out.println("该用户已登录");
 		}
+		// 查询是否有未签收的信息
 //		
 //     ByteBuf buffer = getByteBuf(ctx);      
 //     ctx.channel().writeAndFlush(new TextWebSocketFrame(buffer));
