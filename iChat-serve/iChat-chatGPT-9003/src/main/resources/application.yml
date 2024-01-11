@@ -3,4 +3,4 @@ server:
 open:
   ai:
     url: https://api.openai.com/
-    token:
+    token: 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

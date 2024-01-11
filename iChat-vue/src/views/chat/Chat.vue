@@ -163,7 +163,7 @@ import { mainStore } from '../../store'
 import { useRouter } from 'vue-router'
 import { ChatbubbleSharp, PersonOutline, Menu, Close } from '@vicons/ionicons5'
 import { MoodHappy } from '@vicons/tabler'
-import { NIcon, NModal, NRadio, NRadioGroup, NUpload, NAvatar, NCheckbox } from 'naive-ui'
+import { NIcon, NModal, NUpload, NAvatar, NCheckbox } from 'naive-ui'
 
 import UserInfoPopup  from '../../components/UserInfoPopup.vue'
 import axios from "axios"
@@ -365,6 +365,7 @@ onMounted(async () => {
         getMessagesHistoryList()
         creatWebSocket(res.data.data)
         store.state.websocket.onmessage = function (e: any) {
+            console.log(e)
             websocketonmessage(e);
         };
     })

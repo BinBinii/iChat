@@ -37,7 +37,12 @@ const handleLogin = () => {
         password
     }
     login(params).then(res => {
-        store.state.token = res.headers.authorization
+        if (res.data.code == 200) {
+            store.state.token = res.headers.authorization
+            router.push({name: 'chat'})
+        } else {
+            alert("账号或密码错误")
+        }
     })
 }
 onMounted(async () => {

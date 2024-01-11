@@ -6,7 +6,7 @@ const store = mainStore()
 // 创建axios
 const $http = axios.create({
     //设置默认请求地址
-    baseURL: 'http://127.0.0.1/iChat',
+    baseURL: 'http://127.0.0.1/iChat/',
     //设置请求超时时间
     timeout:5000,
     //设置请求头
