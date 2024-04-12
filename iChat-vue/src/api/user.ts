@@ -1,9 +1,9 @@
-import request from "../utils/request"
+import request from "../utils/AuthRequest"
 
 // 登录
 export function login(data: object) {
     return request({
-        url: '/auth/login',
+        url: '/login',
         method: 'post',
         data
     })
@@ -12,7 +12,7 @@ export function login(data: object) {
 // 注册
 export function register(data: object) {
     return request({
-        url: '/auth/register',
+        url: '/register',
         method: 'post',
         data
     })
@@ -21,16 +21,7 @@ export function register(data: object) {
 // 根据token获取用户信息
 export function loginToken() {
     return request({
-        url: '/auth/login/token',
+        url: '/login/token',
         method: 'get'
-    })
-}
-
-// 获取用户信息
-export function fetchUserInfo(query: object) {
-    return request({
-        url: '/user/get/info',
-        method: 'get',
-        params: query
     })
 }

@@ -15,4 +15,18 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
+  server: {
+    proxy: {
+      '/iChat': {
+        target: 'http://127.0.0.1:9001',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/iChat/, '')
+      },
+      '/auth': {
+        target: 'http://127.0.0.1:9000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/auth/, '')
+      }
+    }
+  }
 })

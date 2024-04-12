@@ -15,3 +15,12 @@ export function fetchFriendReqList(query: object) {
         params: query
     })
 }
+
+// 获取用户信息
+export function fetchUserInfo(query: object) {
+    return request({
+        url: '/user/get/info',
+        method: 'get',
+        params: query
+    })
+}

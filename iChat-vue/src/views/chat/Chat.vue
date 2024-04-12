@@ -168,9 +168,9 @@ import { NIcon, NModal, NUpload, NAvatar, NCheckbox } from 'naive-ui'
 import UserInfoPopup  from '../../components/UserInfoPopup.vue'
 import axios from "axios"
 
-import { loginToken, fetchUserInfo } from '../../api/user'
+import { loginToken } from '../../api/user'
 import { fetchMessagesHistoryList, fetchMessages, readMessages } from '../../api/messages'
-import { fetchFriendList } from '../../api/friend'
+import { fetchFriendList, fetchUserInfo } from '../../api/friend'
 import { UserInfoType, MessageToType, MessageType, PageInfo, CreateGroupFriendListType, CreateGroupFriend } from '../../interface/storeInterface'
 import { creatWebSocket, sendWebSocket, closeWebSocket } from '../../utils/webSocket'
 import { pinyin } from 'pinyin-pro'
